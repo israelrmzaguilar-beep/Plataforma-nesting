@@ -1,4 +1,4 @@
- <!doctype html>
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8">
@@ -422,6 +422,203 @@
       .drop-zone { gap: 10px; }
       .drop-zone .quiet-button { margin-left: 0; }
     }
+
+    :root {
+      --ink: #1d1d1f;
+      --muted: #6e6e73;
+      --line: rgb(29 29 31 / 9%);
+      --paper: #f5f5f7;
+      --white: rgb(255 255 255 / 86%);
+      --green: #2997ff;
+      --green-dark: #0071e3;
+      --lime: #e8f3ff;
+      --coral: #ff9f0a;
+      --soft-green: #eaf4ff;
+      --shadow: 0 18px 55px rgb(0 0 0 / 8%);
+    }
+    :root[data-theme="dark"] {
+      --ink: #f5f5f7;
+      --muted: #a1a1a6;
+      --line: rgb(255 255 255 / 11%);
+      --paper: #101012;
+      --white: rgb(35 35 38 / 88%);
+      --green: #64b5ff;
+      --green-dark: #0a84ff;
+      --lime: #193451;
+      --coral: #ffb340;
+      --soft-green: #1a3045;
+      --shadow: 0 22px 64px rgb(0 0 0 / 36%);
+    }
+    body {
+      background:
+        radial-gradient(ellipse at 50% -20%, rgb(0 113 227 / 10%), transparent 54%),
+        var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      letter-spacing: -.01em;
+    }
+    .topbar {
+      position: sticky;
+      z-index: 10;
+      top: 0;
+      height: 68px;
+      padding: 0 max(5.5vw, calc((100vw - 1240px) / 2));
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--paper) 78%, transparent);
+      backdrop-filter: saturate(180%) blur(22px);
+      -webkit-backdrop-filter: saturate(180%) blur(22px);
+    }
+    .brand { gap: 10px; }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 11px;
+      background: linear-gradient(145deg, #4ba8ff, #0066cc);
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 19px;
+      box-shadow: 0 5px 14px rgb(0 113 227 / 22%);
+    }
+    .brand-name { font-size: 13px; letter-spacing: .08em; }
+    .brand-caption { font-size: 10px; letter-spacing: .08em; }
+    main { width: min(1180px, 89vw); padding-top: 64px; }
+    .page-heading {
+      min-height: 198px;
+      align-items: center;
+      margin-bottom: 28px;
+      padding: 35px 40px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background:
+        radial-gradient(ellipse at 95% 0%, rgb(41 151 255 / 18%), transparent 39%),
+        var(--white);
+      box-shadow: var(--shadow);
+    }
+    .eyebrow { margin-bottom: 13px; font-size: 11px; letter-spacing: .14em; }
+    h1 {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      font-size: clamp(38px, 5vw, 56px);
+      font-weight: 650;
+      letter-spacing: -.055em;
+    }
+    .intro { max-width: 620px; margin-top: 12px; font-size: 15px; }
+    .primary-button, .quiet-button {
+      min-height: 42px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      transition: background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+    .primary-button { background: var(--green-dark); box-shadow: 0 4px 12px rgb(0 113 227 / 19%); }
+    .primary-button:hover { background: var(--green); box-shadow: 0 7px 18px rgb(0 113 227 / 25%); }
+    .quiet-button { color: var(--ink); }
+    .topbar-controls .quiet-button { min-height: 36px; border-color: var(--line); background: var(--white); font-size: 13px; }
+    .topbar-controls .quiet-button:hover { background: var(--soft-green); }
+    .local-note {
+      margin-bottom: 22px;
+      padding: 14px 17px;
+      border: 1px solid rgb(0 113 227 / 12%);
+      border-left: 0;
+      border-radius: 16px;
+      background: var(--soft-green);
+      color: var(--muted);
+    }
+    .local-note strong { color: var(--ink); }
+    :root[data-theme="dark"] .local-note { border-color: var(--line); background: #172a3d; color: var(--muted); }
+    .drop-zone {
+      min-height: 116px;
+      border: 1px dashed rgb(0 113 227 / 32%);
+      border-radius: 22px;
+      background: color-mix(in srgb, var(--white) 68%, var(--soft-green));
+    }
+    :root[data-theme="dark"] .drop-zone { border-color: rgb(100 181 255 / 34%); background: #171d25; }
+    .upload-symbol { width: 42px; height: 42px; border-radius: 14px; background: var(--soft-green); color: var(--green-dark); }
+    .drop-copy strong { font-size: 14px; }
+    .drop-zone .quiet-button { margin-left: 18px; border: 1px solid var(--line); border-radius: 999px; background: var(--white); }
+    .toolbar { margin-top: 42px; margin-bottom: 18px; }
+    .section-title {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      font-size: 25px;
+      font-weight: 650;
+      letter-spacing: -.035em;
+    }
+    .file-count { padding: 4px 9px; border-radius: 999px; background: var(--soft-green); }
+    .search-input, .category-select {
+      height: 42px;
+      border-radius: 12px;
+      background: var(--white);
+    }
+    .file-table-wrap {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--white);
+      box-shadow: 0 8px 28px rgb(0 0 0 / 3%);
+    }
+    .file-table th { padding-top: 15px; padding-bottom: 15px; background: transparent; letter-spacing: .08em; }
+    .file-table td { padding-top: 16px; padding-bottom: 16px; }
+    .file-table tbody tr:hover { background: color-mix(in srgb, var(--soft-green) 54%, transparent); }
+    .file-icon { border-radius: 11px; background: var(--soft-green); }
+    .category-tag { border-radius: 999px; }
+    .icon-button { border-radius: 50%; }
+    .empty-state { padding: 56px 20px; }
+    .empty-state strong {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+    }
+    .platforms-section { margin-top: 48px; }
+    .platform-card {
+      padding: 19px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--white);
+      box-shadow: 0 8px 26px rgb(0 0 0 / 3%);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .platform-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .platform-actions .quiet-button { border-radius: 999px; }
+    .platform-empty { border-radius: 18px; }
+    dialog {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--paper);
+    }
+    dialog::backdrop { background: rgb(0 0 0 / 38%); backdrop-filter: blur(8px); }
+    .dialog-form h2, .file-dialog-header h2 {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      font-weight: 650;
+      letter-spacing: -.035em;
+    }
+    .dialog-form select, .dialog-form textarea,
+    .dialog-form input[type="text"], .dialog-form input[type="url"], .dialog-form input[type="password"],
+    .excel-toolbar input {
+      border-radius: 11px;
+      border-color: var(--line);
+    }
+    #file-dialog { border-radius: 22px; }
+    .file-dialog-content { padding: 26px; }
+    .file-dialog-body { border-radius: 14px; }
+    .excel-fullscreen { border-radius: 0 !important; }
+    :root[data-theme="dark"] .file-table tbody tr:hover { background: #202c39; }
+    :root[data-theme="dark"] .drop-zone .quiet-button { border-color: var(--line); background: #222a34; }
+    :root[data-theme="dark"] .platform-actions .quiet-button { color: var(--green); }
+    @media (max-width: 760px) {
+      .topbar { padding: 0 5.5vw; }
+      main { padding-top: 34px; }
+      .page-heading { min-height: 0; padding: 28px 23px; border-radius: 23px; }
+      .page-heading .primary-button { align-self: flex-start; }
+      .drop-zone .quiet-button { margin-left: 60px; }
+      .file-table-wrap { border-radius: 17px; }
+    }
+    @media (max-width: 420px) {
+      .topbar { padding-right: 10px; padding-left: 10px; }
+      .page-heading { padding: 24px 18px; }
+      .drop-zone .quiet-button { margin-left: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
   </style>
 </head>
 <body>
@@ -446,7 +643,7 @@
       <div>
         <p class="eyebrow">Herramientas para el equipo</p>
         <h1 id="page-title">Material de trabajo</h1>
-        <p class="intro">Documentos y guías para el equipo. Abre y edita archivos de texto, CSV y Excel .xlsx; también puedes previsualizar otros libros.</p>
+        <p class="intro">Documentos, guías y herramientas para el equipo. Estamos preparando la conexión con OneDrive para abrir los libros en Excel para la Web.</p>
       </div>
       <button class="primary-button" id="upload-button" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5 5 5M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"/></svg>
@@ -456,7 +653,7 @@
 
     <aside class="local-note" aria-label="Aviso sobre almacenamiento local">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg>
-      <span><strong>Versión inicial:</strong> los archivos y enlaces se guardan en este navegador y solo estarán disponibles en este equipo. El perfil de administrador es un control local; para compartirlos con todos los agentes y tener permisos seguros hace falta un servidor.</span>
+      <span><strong>Almacenamiento local:</strong> los archivos y enlaces actuales se guardan en este navegador y solo están disponibles en este equipo. La conexión con OneDrive permitirá abrir los libros en Excel para la Web y requiere iniciar sesión con Microsoft.</span>
     </aside>
 
     <section class="drop-zone" id="drop-zone" aria-label="Zona para subir archivos arrastrándolos">
@@ -1247,7 +1444,25 @@
         return { engine, sheetIds, HyperFormula };
       }
 
+      async function tryInitializeFormulaEngine(workbook) {
+        try {
+          return { formulaState: await initializeFormulaEngine(workbook), formulaError: null };
+        } catch (error) {
+          console.error("No se pudo inicializar el motor de fórmulas de Excel.", error);
+          return {
+            formulaState: null,
+            formulaError: error instanceof Error ? error.message : String(error)
+          };
+        }
+      }
+
       function recalculateWorkbookCell(workbookState, worksheet, cell) {
+        if (!workbookState) {
+          const cachedResult = cell.value && typeof cell.value === "object" && cell.value.formula
+            ? cell.value.result
+            : undefined;
+          return cachedResult;
+        }
         const formulaSheetId = workbookState.sheetIds.get(worksheet.name);
         if (formulaSheetId === undefined) return null;
         const result = workbookState.engine.getCellValue({
@@ -1262,6 +1477,7 @@
       }
 
       function updateFormulaEngineCell(workbookState, worksheet, cell, value) {
+        if (!workbookState) return;
         const formulaSheetId = workbookState.sheetIds.get(worksheet.name);
         if (formulaSheetId === undefined) throw new Error(`No se encontró la hoja "${worksheet.name}" en el motor de fórmulas.`);
         workbookState.engine.setCellContents({
@@ -1271,7 +1487,19 @@
         }, [[value]]);
       }
 
+      function syncFormulaEngineCell(worksheet, cell) {
+        if (!activeWorkbook || !activeWorkbook.formulaState) return;
+        try {
+          updateFormulaEngineCell(activeWorkbook.formulaState, worksheet, cell, toFormulaInput(cell));
+        } catch (error) {
+          console.error("No se pudo recalcular una celda; se conservará la fórmula para Excel.", error);
+          activeWorkbook.formulaState = null;
+          activeWorkbook.formulaError = error instanceof Error ? error.message : String(error);
+        }
+      }
+
       function storeFormulaResults(workbookState, workbook) {
+        if (!workbookState) return;
         workbook.worksheets.forEach((worksheet) => {
           const formulaSheetId = workbookState.sheetIds.get(worksheet.name);
           worksheet.eachRow({ includeEmpty: false }, (row) => {
@@ -1419,7 +1647,7 @@
         const worksheet = activeWorkbook.workbook.getWorksheet(activeWorkbook.sheetName);
         const cell = worksheet.getCell(row, column);
         setExcelCellValue(cell, text);
-        updateFormulaEngineCell(activeWorkbook.formulaState, worksheet, cell, toFormulaInput(cell));
+        syncFormulaEngineCell(worksheet, cell);
         activeWorkbook.selectedCell = { row, column };
         editorHasChanges = true;
         saveFileEditButton.textContent = "Guardar Excel";
@@ -1459,16 +1687,20 @@
         view.className = "spreadsheet-view";
         const notice = document.createElement("p");
         notice.className = "spreadsheet-notice";
-        notice.textContent = isAdmin()
-          ? "Editor de Excel con fórmulas: selecciona una celda, escribe un valor o fórmula en la barra y guarda. Desplázate por toda la hoja."
-          : "Vista de solo lectura. Inicia sesión como administrador para editar celdas y fórmulas.";
-        notice.append(" Motor HyperFormula: GPLv3; incluye muchas, pero no todas, las funciones de Excel.");
-        const license = document.createElement("a");
-        license.href = "https://github.com/handsontable/hyperformula";
-        license.target = "_blank";
-        license.rel = "noopener noreferrer";
-        license.textContent = "Licencia y código fuente";
-        notice.append(" ", license);
+        if (activeWorkbook.formulaError) {
+          notice.textContent = `El libro se abrió, pero el recálculo de fórmulas no está disponible. Se conservan los resultados guardados en el archivo; las fórmulas editadas se recalcularán al abrirlo en Excel. Detalle: ${activeWorkbook.formulaError}`;
+        } else {
+          notice.textContent = isAdmin()
+            ? "Editor de Excel con fórmulas: selecciona una celda, escribe un valor o fórmula en la barra y guarda. Desplázate por toda la hoja."
+            : "Vista de solo lectura. Inicia sesión como administrador para editar celdas y fórmulas.";
+          notice.append(" Motor HyperFormula: GPLv3; incluye muchas, pero no todas, las funciones de Excel.");
+          const license = document.createElement("a");
+          license.href = "https://github.com/handsontable/hyperformula";
+          license.target = "_blank";
+          license.rel = "noopener noreferrer";
+          license.textContent = "Licencia y código fuente";
+          notice.append(" ", license);
+        }
         view.append(notice);
 
         const tabs = document.createElement("div");
@@ -1725,7 +1957,7 @@
             row.forEach((value, columnOffset) => {
               const target = targetWorksheet.getCell(startRow + rowOffset, startColumn + columnOffset);
               setExcelCellValue(target, value);
-              updateFormulaEngineCell(activeWorkbook.formulaState, targetWorksheet, target, toFormulaInput(target));
+              syncFormulaEngineCell(targetWorksheet, target);
             });
           });
           editorHasChanges = true;
@@ -1807,16 +2039,19 @@
           loadingMessage.className = "file-preview-message";
           loadingMessage.textContent = "Abriendo el editor de Excel…";
           fileDialogBody.append(loadingMessage);
+          let openingStep = "cargar la biblioteca del editor";
           fileDialog.showModal();
           try {
             const ExcelJS = await loadExcelLibrary();
+            openingStep = "leer el archivo";
             const originalBytes = await file.blob.arrayBuffer();
             const workbook = new ExcelJS.Workbook();
+            openingStep = "interpretar el libro";
             await workbook.xlsx.load(originalBytes);
             if (workbook.worksheets.length === 0) {
               throw new Error("El libro no contiene hojas para mostrar.");
             }
-            const formulaState = await initializeFormulaEngine(workbook);
+            const { formulaState, formulaError } = await tryInitializeFormulaEngine(workbook);
             activeWorkbook = {
               kind: "exceljs",
               file,
@@ -1824,6 +2059,7 @@
               sheetName: workbook.worksheets[0].name,
               originalBytes,
               formulaState,
+              formulaError,
               selectedCell: { row: 1, column: 1 }
             };
             saveFileEditButton.textContent = "Guardar Excel";
@@ -1835,7 +2071,8 @@
           } catch (error) {
             const message = document.createElement("div");
             message.className = "file-preview-message";
-            message.textContent = "No se pudo abrir este archivo .xlsx. Revisa que sea válido y que haya conexión a internet para cargar el editor.";
+            const detail = error instanceof Error ? error.message : String(error);
+            message.textContent = `No se pudo abrir el archivo .xlsx al ${openingStep}. ${detail}`;
             fileDialogBody.replaceChildren(message);
             throw error;
           }
@@ -2062,7 +2299,9 @@
             const workbook = new ExcelJS.Workbook();
             await workbook.xlsx.load(activeWorkbook.originalBytes.slice(0));
             activeWorkbook.workbook = workbook;
-            activeWorkbook.formulaState = await initializeFormulaEngine(workbook);
+            const formulaEngine = await tryInitializeFormulaEngine(workbook);
+            activeWorkbook.formulaState = formulaEngine.formulaState;
+            activeWorkbook.formulaError = formulaEngine.formulaError;
             editorHasChanges = false;
           } catch (error) {
             statusMessage.textContent = "No se pudieron descartar los cambios antes de cambiar de perfil.";
@@ -2304,7 +2543,9 @@
             const workbook = new ExcelJS.Workbook();
             await workbook.xlsx.load(activeWorkbook.originalBytes.slice(0));
             activeWorkbook.workbook = workbook;
-            activeWorkbook.formulaState = await initializeFormulaEngine(workbook);
+            const formulaEngine = await tryInitializeFormulaEngine(workbook);
+            activeWorkbook.formulaState = formulaEngine.formulaState;
+            activeWorkbook.formulaError = formulaEngine.formulaError;
             renderWorkbookSheet();
             editorHasChanges = false;
             saveFileEditButton.hidden = true;
