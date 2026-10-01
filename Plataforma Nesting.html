@@ -1,0 +1,2429 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2f6fb">
+  <title>Recursos de agentes | Nesting</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172536;
+      --muted: #5f7185;
+      --line: #d5e0eb;
+      --paper: #f2f6fb;
+      --white: #fff;
+      --green: #3679b9;
+      --green-dark: #204f7d;
+      --lime: #f2c66d;
+      --coral: #df765f;
+      --soft-green: #e6eff8;
+      --shadow: 0 18px 50px rgb(30 48 38 / 9%);
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --ink: #e7eef8;
+      --muted: #a6b8cc;
+      --line: #364b62;
+      --paper: #101923;
+      --white: #1a2837;
+      --green: #70b5f0;
+      --green-dark: #3679b9;
+      --lime: #f2c66d;
+      --coral: #f08e79;
+      --soft-green: #25384b;
+      --shadow: 0 18px 50px rgb(0 0 0 / 38%);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      min-width: 320px;
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      font-size: 15px;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { color: inherit; }
+
+    .topbar {
+      height: 72px;
+      padding: 0 5.5vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--white);
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px 10px 10px 3px;
+      background: var(--green-dark);
+      color: var(--lime);
+      font-family: Georgia, serif;
+      font-size: 21px;
+      font-weight: 700;
+    }
+    .brand-name { font-size: 14px; font-weight: 700; letter-spacing: .04em; }
+    .brand-caption { margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .topbar-controls { display: flex; align-items: center; gap: 12px; }
+    .topbar-label { color: var(--muted); font-size: 13px; }
+    .topbar-controls .quiet-button { min-height: 38px; padding: 0 12px; border: 1px solid var(--line); font-size: 13px; }
+    [hidden] { display: none !important; }
+
+    main { width: min(1180px, 89vw); margin: 0 auto; padding: 48px 0 72px; }
+    .page-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(32px, 4vw, 46px);
+      font-weight: 400;
+      line-height: 1.08;
+    }
+    .intro { margin: 10px 0 0; color: var(--muted); line-height: 1.5; }
+
+    .primary-button, .quiet-button {
+      min-height: 44px;
+      padding: 0 17px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      border: 0;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background .18s ease, transform .18s ease;
+    }
+    .primary-button { background: var(--green-dark); color: white; }
+    .primary-button:hover { background: var(--green); transform: translateY(-1px); }
+    .quiet-button { background: transparent; color: var(--muted); }
+    .quiet-button:hover { background: var(--soft-green); color: var(--ink); }
+    .primary-button svg, .quiet-button svg { width: 17px; height: 17px; }
+
+    .local-note {
+      margin-bottom: 24px;
+      padding: 13px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      border-left: 3px solid var(--coral);
+      background: #fff6f0;
+      color: #765346;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .local-note svg { width: 17px; height: 17px; flex: 0 0 auto; margin-top: 1px; }
+
+    .drop-zone {
+      min-height: 130px;
+      padding: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      border: 1px dashed #9bb7d2;
+      border-radius: 6px;
+      background: linear-gradient(105deg, #e7f0fa, #f7f9fc 72%);
+      text-align: left;
+      transition: border-color .18s ease, background .18s ease;
+    }
+    .drop-zone.is-over { border-color: var(--green); background: #e1edf8; }
+    :root[data-theme="dark"] .drop-zone { border-color: #46617c; background: linear-gradient(105deg, #1b3045, #202d3b 72%); }
+    :root[data-theme="dark"] .drop-zone.is-over { border-color: var(--green); background: #263c52; }
+    .upload-symbol {
+      width: 45px;
+      height: 45px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: var(--lime);
+      color: var(--green-dark);
+    }
+    .upload-symbol svg { width: 21px; height: 21px; }
+    .drop-copy strong { display: block; font-size: 15px; }
+    .drop-copy span { display: block; margin-top: 5px; color: var(--muted); font-size: 13px; }
+    .drop-zone .quiet-button { margin-left: 18px; border: 1px solid #c7d8e9; background: #fff; }
+
+    .toolbar {
+      margin: 34px 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .section-title { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 24px; font-weight: 400; }
+    .file-count { margin-left: 8px; color: var(--muted); font-family: "Trebuchet MS", sans-serif; font-size: 13px; }
+    .filters { display: flex; gap: 9px; }
+    .search-wrap { position: relative; }
+    .search-wrap svg {
+      position: absolute;
+      top: 50%; left: 12px;
+      width: 16px; height: 16px;
+      color: var(--muted);
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    .search-input, .category-select {
+      height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--white);
+      color: var(--ink);
+      outline: none;
+    }
+    .search-input { width: min(250px, 40vw); padding: 0 12px 0 36px; }
+    .category-select { min-width: 160px; padding: 0 32px 0 11px; }
+    .search-input:focus, .category-select:focus, input:focus, select:focus, textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgb(36 107 80 / 12%);
+      outline: none;
+    }
+
+    .file-table-wrap { overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: var(--white); }
+    .file-table { width: 100%; border-collapse: collapse; text-align: left; }
+    .file-table th {
+      padding: 13px 18px;
+      background: var(--white);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .file-table td { padding: 15px 18px; border-top: 1px solid var(--line); vertical-align: middle; }
+    .file-table tbody tr:hover { background: #f4f8fc; }
+    .file-name { display: flex; align-items: center; gap: 12px; min-width: 260px; }
+    .file-icon {
+      width: 38px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 4px;
+      background: #e8f0f8;
+      color: var(--green-dark);
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .file-title { overflow-wrap: anywhere; font-weight: 700; }
+    .file-subtitle { margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .category-tag { display: inline-block; padding: 6px 9px; border-radius: 3px; background: var(--soft-green); color: #244f77; font-size: 12px; }
+    .file-date, .file-size { color: var(--muted); font-size: 13px; white-space: nowrap; }
+    .row-actions { display: flex; justify-content: flex-end; gap: 4px; }
+    .icon-button {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .icon-button:hover { background: var(--soft-green); color: var(--green-dark); }
+    .icon-button.remove:hover { background: #fff0ec; color: #b9513b; }
+    .icon-button svg { width: 17px; height: 17px; }
+    .empty-state { padding: 48px 20px; color: var(--muted); text-align: center; }
+    .empty-state strong { display: block; margin-bottom: 7px; color: var(--ink); font-family: Georgia, serif; font-size: 21px; font-weight: 400; }
+    .empty-state[hidden] { display: none; }
+    .status-message { min-height: 22px; margin: 10px 0 0; color: var(--muted); font-size: 12px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+    .platforms-section { margin-top: 42px; }
+    .platforms-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 15px; }
+    .platform-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+    .platform-card { min-width: 0; padding: 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--white); }
+    .platform-title { overflow-wrap: anywhere; font-weight: 700; }
+    .platform-url { display: block; margin-top: 5px; overflow: hidden; color: var(--muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+    .platform-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+    .platform-actions .quiet-button { min-height: 36px; padding: 0 11px; border: 1px solid var(--line); color: var(--green-dark); font-size: 13px; text-decoration: none; }
+    .platform-empty { padding: 18px; border: 1px dashed var(--line); border-radius: 6px; color: var(--muted); text-align: center; }
+    .platform-empty[hidden] { display: none; }
+
+    dialog {
+      width: min(440px, calc(100vw - 32px));
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+    dialog::backdrop { background: rgb(20 36 27 / 42%); backdrop-filter: blur(2px); }
+    .dialog-form { padding: 25px; }
+    .dialog-form h2 { margin: 0; font-family: Georgia, serif; font-size: 25px; font-weight: 400; }
+    .dialog-help { margin: 8px 0 22px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .pending-list { max-height: 112px; margin: 0 0 20px; padding: 0; overflow: auto; list-style: none; }
+    .pending-list li { padding: 7px 9px; overflow-wrap: anywhere; border-bottom: 1px solid var(--line); font-size: 13px; }
+    .field-label { display: block; margin: 0 0 7px; font-size: 13px; font-weight: 700; }
+    .dialog-form select, .dialog-form textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--white);
+    }
+    .dialog-form textarea { min-height: 78px; resize: vertical; }
+    .field-group { margin-bottom: 17px; }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 23px; }
+    .dialog-actions .quiet-button { border: 1px solid var(--line); }
+    .dialog-actions .primary-button { min-width: 120px; }
+    .dialog-form input[type="text"], .dialog-form input[type="url"], .dialog-form input[type="password"] {
+      width: 100%;
+      height: 42px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--white);
+      color: var(--ink);
+    }
+    #file-dialog { width: min(1000px, calc(100vw - 32px)); max-width: 1000px; max-height: 90vh; }
+    .file-dialog-content { padding: 24px; }
+    .file-dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .file-dialog-header h2 { margin: 0; overflow-wrap: anywhere; font-family: Georgia, serif; font-size: 24px; font-weight: 400; }
+    .file-dialog-header p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+    .file-dialog-body { min-height: 220px; max-height: 62vh; margin-top: 18px; overflow: auto; border: 1px solid var(--line); border-radius: 4px; background: var(--white); }
+    .excel-toolbar { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 8px; margin-top: 14px; }
+    .excel-toolbar[hidden] { display: none; }
+    .excel-toolbar input { min-width: 0; height: 38px; padding: 0 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--white); color: var(--ink); }
+    .excel-toolbar input[readonly] { background: var(--soft-green); }
+    .excel-fullscreen { position: fixed !important; inset: 0 !important; width: 100vw !important; max-width: none !important; height: 100vh !important; height: 100dvh !important; max-height: none !important; margin: 0 !important; overflow: hidden !important; border: 0 !important; border-radius: 0 !important; }
+    .excel-fullscreen .file-dialog-content { display: flex; width: 100%; height: 100%; min-height: 0; flex-direction: column; padding: 14px 18px 10px; }
+    .excel-fullscreen .file-dialog-header { flex: 0 0 auto; align-items: center; }
+    .excel-fullscreen .file-dialog-header h2 { font-size: 21px; }
+    .excel-fullscreen .file-dialog-body { display: flex; min-height: 0; max-height: none; flex: 1 1 auto; flex-direction: column; margin-top: 10px; }
+    .excel-fullscreen .dialog-actions { flex: 0 0 auto; margin-top: 8px; }
+    .excel-fullscreen .spreadsheet-view { min-height: 0; flex: 1 1 auto; }
+    .excel-fullscreen .spreadsheet-grid-wrap { max-height: none; flex: 1 1 auto; }
+    .excel-fullscreen .excel-toolbar { flex: 0 0 auto; }
+    body.excel-workspace > :not(#file-dialog):not(#auth-dialog) { display: none !important; }
+    body.excel-workspace #file-dialog::backdrop { background: var(--paper); backdrop-filter: none; }
+    .spreadsheet-grid tr[data-excel-row] { height: 25px; }
+    .spreadsheet-grid tr[data-excel-row] td { height: 25px; max-width: none; overflow: hidden; padding: 3px 7px; text-overflow: ellipsis; white-space: nowrap; }
+    .spreadsheet-grid .excel-selected { outline: 2px solid #287ac0; outline-offset: -2px; }
+    :root[data-theme="dark"] .spreadsheet-grid .excel-selected { outline-color: #8bc5fa; }
+    .spreadsheet-grid .excel-row-header { position: sticky; left: 0; z-index: 1; min-width: 48px; width: 48px; background: var(--soft-green); color: var(--muted); text-align: right; }
+    .spreadsheet-grid thead .excel-row-header { z-index: 4; }
+    .spreadsheet-grid .excel-column-header { position: sticky; top: 0; z-index: 2; background: var(--soft-green); color: var(--ink); text-align: center; }
+    .spreadsheet-grid thead .excel-row-header { top: 0; }
+    .spreadsheet-grid td[contenteditable="true"] { cursor: cell; }
+    .spreadsheet-grid .excel-spacer { min-width: 0; max-width: none; padding: 0; border: 0; background: transparent; }
+    .file-editor { width: 100%; min-height: 55vh; padding: 14px; resize: vertical; border: 0; background: var(--white); color: var(--ink); font-family: Consolas, "Courier New", monospace; font-size: 13px; line-height: 1.5; tab-size: 2; }
+    .file-preview-image { display: block; max-width: 100%; max-height: 60vh; margin: auto; object-fit: contain; }
+    .file-preview-frame { display: block; width: 100%; height: 62vh; border: 0; background: #fff; }
+    .file-preview-message { padding: 32px 20px; color: var(--muted); line-height: 1.5; text-align: center; }
+    .file-preview-message strong { display: block; margin-bottom: 8px; color: var(--ink); }
+    .password-input-wrap { display: flex; align-items: stretch; gap: 8px; }
+    .dialog-form .password-input-wrap input[type="password"],
+    .dialog-form .password-input-wrap input[type="text"] { flex: 1; min-width: 0; }
+    .password-toggle { min-width: 92px; padding: 0 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--white); color: var(--ink); cursor: pointer; font-size: 12px; }
+    .spreadsheet-view { display: flex; min-height: 220px; flex-direction: column; }
+    .spreadsheet-notice { margin: 0; padding: 10px 12px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    .spreadsheet-tabs { display: flex; gap: 4px; padding: 8px; overflow-x: auto; border-bottom: 1px solid var(--line); background: var(--white); }
+    .spreadsheet-tab { flex: 0 0 auto; min-height: 34px; padding: 0 12px; border: 1px solid var(--line); border-radius: 4px; background: transparent; color: var(--ink); cursor: pointer; }
+    .spreadsheet-tab[aria-selected="true"] { border-color: var(--green-dark); background: var(--soft-green); color: var(--ink); font-weight: 700; }
+    .spreadsheet-grid-wrap { max-height: 55vh; overflow: auto; background: var(--white); }
+    .spreadsheet-grid { width: max-content; min-width: 100%; border-collapse: separate; border-spacing: 0; color: var(--ink); font-family: "Segoe UI", sans-serif; font-size: 12px; }
+    .spreadsheet-grid th, .spreadsheet-grid td { min-width: 100px; max-width: 320px; padding: 7px 9px; overflow-wrap: anywhere; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .spreadsheet-grid thead th { position: sticky; z-index: 2; top: 0; background: var(--soft-green); color: var(--ink); text-align: center; }
+    .spreadsheet-grid th:first-child { position: sticky; z-index: 3; left: 0; min-width: 48px; width: 48px; background: var(--soft-green); color: var(--muted); text-align: right; }
+    .spreadsheet-grid td[contenteditable="true"] { background: var(--white); cursor: cell; }
+    .spreadsheet-grid td[contenteditable="true"]:focus { outline: 2px solid var(--green); outline-offset: -2px; }
+    .spreadsheet-grid td[contenteditable="true"]:hover { box-shadow: inset 0 0 0 1px rgb(54 121 185 / 45%); }
+    .spreadsheet-grid .excel-number { text-align: right; }
+    .spreadsheet-grid .excel-center { text-align: center; }
+    .spreadsheet-grid .excel-error { color: #c0392b; }
+
+    :root[data-theme="dark"] .local-note { border-left-color: var(--coral); background: #352923; color: #f3c4ae; }
+    :root[data-theme="dark"] .drop-zone .quiet-button { border-color: var(--line); background: var(--white); color: var(--ink); }
+    :root[data-theme="dark"] .file-table th { background: #223447; }
+    :root[data-theme="dark"] .file-table td { border-top-color: var(--line); }
+    :root[data-theme="dark"] .file-table tbody tr:hover { background: #202f3f; }
+    :root[data-theme="dark"] .file-icon { background: #263b50; }
+    :root[data-theme="dark"] .category-tag { color: #c6e1fb; }
+    :root[data-theme="dark"] .icon-button.remove:hover { background: #402b27; color: #ffa58f; }
+    :root[data-theme="dark"] .dialog-form select,
+    :root[data-theme="dark"] .dialog-form textarea,
+    :root[data-theme="dark"] .dialog-form input[type="text"],
+    :root[data-theme="dark"] .dialog-form input[type="url"],
+    :root[data-theme="dark"] .dialog-form input[type="password"],
+    :root[data-theme="dark"] .password-toggle { border-color: var(--line); background: #101923; color: var(--ink); }
+    :root[data-theme="dark"] .pending-list li { border-bottom-color: var(--line); }
+    :root[data-theme="dark"] .file-dialog-body { background: #101923; }
+    :root[data-theme="dark"] .file-editor { background: #101923; color: var(--ink); }
+    :root[data-theme="dark"] .file-preview-frame { background: #101923; }
+
+    @media (max-width: 760px) {
+      .topbar { height: 62px; padding: 0 5.5vw; }
+      .topbar-controls { gap: 6px; }
+      .topbar-controls .quiet-button { min-height: 34px; max-width: 150px; padding: 0 8px; font-size: 12px; line-height: 1.2; text-align: center; }
+      .topbar-label { display: none; }
+      main { padding-top: 34px; }
+      .page-heading { align-items: flex-start; flex-direction: column; gap: 18px; }
+      .page-heading .primary-button { align-self: stretch; }
+      .drop-zone { flex-wrap: wrap; justify-content: flex-start; }
+      .drop-zone .quiet-button { margin-left: 60px; }
+      .toolbar { align-items: flex-start; flex-direction: column; }
+      .filters { width: 100%; }
+      .search-wrap { flex: 1; }
+      .search-input { width: 100%; }
+      .category-select { min-width: 130px; }
+      .file-table thead { display: none; }
+      .file-table, .file-table tbody, .file-table tr, .file-table td { display: block; width: 100%; }
+      .file-table tr { position: relative; padding: 12px 14px 10px; border-top: 1px solid var(--line); }
+      .file-table td { padding: 5px 0; border: 0; }
+      .file-table td:first-child { padding-right: 54px; }
+      .file-name { min-width: 0; }
+      .file-table td:nth-child(2), .file-table td:nth-child(3), .file-table td:nth-child(4) { display: inline-block; width: auto; margin: 8px 12px 0 0; }
+      .file-table td:last-child { position: absolute; top: 16px; right: 8px; width: auto; }
+      .row-actions { gap: 0; }
+      .icon-button { width: 32px; height: 32px; }
+      .platforms-heading { align-items: flex-start; flex-direction: column; }
+      .platforms-heading .primary-button { align-self: stretch; }
+      .file-dialog-content { padding: 18px; }
+      .file-dialog-body { max-height: 58vh; }
+      .file-preview-frame { height: 58vh; }
+      .spreadsheet-grid th, .spreadsheet-grid td { min-width: 84px; }
+      .excel-fullscreen .file-dialog-content { padding: 10px; }
+      .excel-fullscreen .file-dialog-header h2 { font-size: 17px; }
+    }
+    @media (max-width: 420px) {
+      .topbar { padding-right: 10px; padding-left: 10px; }
+      .brand-caption { display: none; }
+      .brand { gap: 8px; }
+      .topbar-controls { gap: 4px; }
+      .topbar-controls .quiet-button { max-width: 100px; padding: 0 6px; font-size: 11px; }
+      #theme-toggle { max-width: 78px; }
+      .filters { align-items: stretch; flex-direction: column; }
+      .category-select { width: 100%; }
+      .drop-zone { gap: 10px; }
+      .drop-zone .quiet-button { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand" aria-label="Nesting, recursos para agentes">
+      <div class="brand-mark" aria-hidden="true">N</div>
+      <div>
+        <div class="brand-name">NESTING</div>
+        <div class="brand-caption">CENTRO DE RECURSOS</div>
+      </div>
+    </div>
+    <div class="topbar-controls">
+      <span class="topbar-label" id="profile-label" aria-live="polite">Perfil: agente (solo lectura)</span>
+      <button class="quiet-button" id="theme-toggle" type="button" aria-pressed="false">Modo oscuro</button>
+      <button class="quiet-button" id="admin-login-button" type="button">Configurar administrador</button>
+      <button class="quiet-button" id="agent-mode-button" type="button" hidden>Usar perfil de agente</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-heading" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Herramientas para el equipo</p>
+        <h1 id="page-title">Material de trabajo</h1>
+        <p class="intro">Documentos y guías para el equipo. Abre y edita archivos de texto, CSV y Excel .xlsx; también puedes previsualizar otros libros.</p>
+      </div>
+      <button class="primary-button" id="upload-button" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5 5 5M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"/></svg>
+        Subir archivos
+      </button>
+    </section>
+
+    <aside class="local-note" aria-label="Aviso sobre almacenamiento local">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg>
+      <span><strong>Versión inicial:</strong> los archivos y enlaces se guardan en este navegador y solo estarán disponibles en este equipo. El perfil de administrador es un control local; para compartirlos con todos los agentes y tener permisos seguros hace falta un servidor.</span>
+    </aside>
+
+    <section class="drop-zone" id="drop-zone" aria-label="Zona para subir archivos arrastrándolos">
+      <div class="upload-symbol" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4m0 0L7 9m5-5 5 5M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"/></svg>
+      </div>
+      <div class="drop-copy">
+        <strong>Agrega material para el equipo</strong>
+        <span>Arrastra archivos aquí o selecciónalos desde tu equipo.</span>
+      </div>
+      <button class="quiet-button" id="browse-button" type="button">Elegir archivos</button>
+      <input id="file-input" type="file" multiple hidden>
+    </section>
+
+    <section aria-labelledby="files-heading">
+      <div class="toolbar">
+        <h2 class="section-title" id="files-heading">Archivos disponibles <span class="file-count" id="file-count">0 archivos</span></h2>
+        <div class="filters">
+          <label class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
+            <input class="search-input" id="search-input" type="search" placeholder="Buscar archivo..." aria-label="Buscar archivos">
+          </label>
+          <select class="category-select" id="category-filter" aria-label="Filtrar por categoría">
+            <option value="all">Todas las categorías</option>
+            <option>Procedimientos</option>
+            <option>Productos</option>
+            <option>Calidad</option>
+            <option>Capacitación</option>
+            <option>Plantillas</option>
+            <option>Otros</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="file-table-wrap">
+        <table class="file-table">
+          <thead>
+            <tr><th>Nombre</th><th>Categoría</th><th>Fecha de carga</th><th>Tamaño</th><th><span class="sr-only">Acciones</span></th></tr>
+          </thead>
+          <tbody id="file-list"></tbody>
+        </table>
+        <div class="empty-state" id="empty-state">
+          <strong>Aún no hay archivos</strong>
+          Sube el primer documento para empezar tu biblioteca.
+        </div>
+      </div>
+      <p class="status-message" id="status-message" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="platforms-section" aria-labelledby="platforms-heading">
+      <div class="platforms-heading">
+        <div>
+          <h2 class="section-title" id="platforms-heading">Plataformas del equipo</h2>
+          <p class="intro">Enlaces útiles para que los agentes abran otras plataformas.</p>
+        </div>
+        <button class="primary-button" id="add-link-button" type="button" hidden>Agregar enlace</button>
+      </div>
+      <div class="platform-grid" id="platform-list"></div>
+      <div class="platform-empty" id="platform-empty">Todavía no hay enlaces guardados.</div>
+    </section>
+  </main>
+
+  <dialog id="upload-dialog" aria-labelledby="dialog-title">
+    <form class="dialog-form" id="upload-form">
+      <h2 id="dialog-title">Organizar archivos</h2>
+      <p class="dialog-help">Se agregarán a la biblioteca de este navegador. Puedes seleccionar varios archivos a la vez.</p>
+      <ul class="pending-list" id="pending-list"></ul>
+      <div class="field-group">
+        <label class="field-label" for="upload-category">Categoría</label>
+        <select id="upload-category" required>
+          <option>Procedimientos</option>
+          <option>Productos</option>
+          <option>Calidad</option>
+          <option>Capacitación</option>
+          <option>Plantillas</option>
+          <option>Otros</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="upload-notes">Nota (opcional)</label>
+        <textarea id="upload-notes" maxlength="240" placeholder="Ej. Vigente para el turno de la tarde"></textarea>
+      </div>
+      <div class="dialog-actions">
+        <button class="quiet-button" id="cancel-upload" type="button">Cancelar</button>
+        <button class="primary-button" type="submit">Guardar archivos</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="auth-dialog" aria-labelledby="auth-title">
+    <form class="dialog-form" id="auth-form">
+      <h2 id="auth-title">Administrador</h2>
+      <p class="dialog-help" id="auth-help"></p>
+      <div class="field-group">
+        <label class="field-label" for="admin-password">Contraseña del administrador</label>
+        <div class="password-input-wrap">
+          <input id="admin-password" type="password" minlength="10" autocomplete="new-password" required>
+          <button class="password-toggle" type="button" data-password-toggle="admin-password" aria-pressed="false">Mostrar</button>
+        </div>
+      </div>
+      <div class="field-group" id="confirm-password-group" hidden>
+        <label class="field-label" for="admin-password-confirm">Confirmar contraseña</label>
+        <div class="password-input-wrap">
+          <input id="admin-password-confirm" type="password" minlength="10" autocomplete="new-password">
+          <button class="password-toggle" type="button" data-password-toggle="admin-password-confirm" aria-pressed="false">Mostrar</button>
+        </div>
+      </div>
+      <p class="status-message" id="auth-status" role="alert"></p>
+      <div class="dialog-actions">
+        <button class="quiet-button" id="cancel-auth" type="button">Cancelar</button>
+        <button class="primary-button" type="submit">Continuar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="link-dialog" aria-labelledby="link-dialog-title">
+    <form class="dialog-form" id="link-form">
+      <h2 id="link-dialog-title">Agregar plataforma</h2>
+      <p class="dialog-help">Guarda un enlace para abrirlo en otra pestaña. Solo se aceptan direcciones web HTTP o HTTPS.</p>
+      <div class="field-group">
+        <label class="field-label" for="link-title">Nombre de la plataforma</label>
+        <input id="link-title" type="text" maxlength="100" required placeholder="Ej. Portal de capacitación">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="link-url">Dirección web</label>
+        <input id="link-url" type="url" maxlength="2048" required placeholder="https://ejemplo.com">
+      </div>
+      <p class="status-message" id="link-status" role="alert"></p>
+      <div class="dialog-actions">
+        <button class="quiet-button" id="cancel-link" type="button">Cancelar</button>
+        <button class="primary-button" type="submit">Guardar enlace</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="file-dialog" aria-labelledby="file-dialog-title">
+    <div class="file-dialog-content">
+      <div class="file-dialog-header">
+        <div>
+          <h2 id="file-dialog-title"></h2>
+          <p id="file-dialog-description"></p>
+        </div>
+        <div class="topbar-controls">
+          <button class="quiet-button" id="excel-admin-login" type="button" hidden>Entrar como administrador</button>
+          <button class="quiet-button" id="excel-agent-mode" type="button" hidden>Usar perfil de agente</button>
+          <button class="quiet-button" id="close-file-dialog" type="button" aria-label="Cerrar visor">Cerrar</button>
+        </div>
+      </div>
+      <div class="excel-toolbar" id="excel-toolbar" hidden>
+        <input id="excel-cell-address" type="text" aria-label="Celda seleccionada" readonly>
+        <input id="excel-formula-input" type="text" aria-label="Valor o fórmula de la celda" placeholder="Escribe un valor o fórmula, por ejemplo =SUM(A1:A5)" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="file-dialog-body" id="file-dialog-body"></div>
+      <div class="dialog-actions">
+        <button class="quiet-button" id="cancel-file-edit" type="button" hidden>Descartar cambios</button>
+        <button class="primary-button" id="save-file-edit" type="button" hidden>Guardar cambios</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    (() => {
+      const databaseName = "nesting-agent-library";
+      const storeName = "files";
+      const linksStoreName = "links";
+      const settingsStoreName = "settings";
+      const fileInput = document.querySelector("#file-input");
+      const dropZone = document.querySelector("#drop-zone");
+      const dialog = document.querySelector("#upload-dialog");
+      const form = document.querySelector("#upload-form");
+      const pendingList = document.querySelector("#pending-list");
+      const fileList = document.querySelector("#file-list");
+      const emptyState = document.querySelector("#empty-state");
+      const statusMessage = document.querySelector("#status-message");
+      const searchInput = document.querySelector("#search-input");
+      const categoryFilter = document.querySelector("#category-filter");
+      const fileCount = document.querySelector("#file-count");
+      const profileLabel = document.querySelector("#profile-label");
+      const adminLoginButton = document.querySelector("#admin-login-button");
+      const agentModeButton = document.querySelector("#agent-mode-button");
+      const themeToggle = document.querySelector("#theme-toggle");
+      const uploadButton = document.querySelector("#upload-button");
+      const addLinkButton = document.querySelector("#add-link-button");
+      const platformList = document.querySelector("#platform-list");
+      const platformEmpty = document.querySelector("#platform-empty");
+      const authDialog = document.querySelector("#auth-dialog");
+      const authForm = document.querySelector("#auth-form");
+      const authTitle = document.querySelector("#auth-title");
+      const authHelp = document.querySelector("#auth-help");
+      const authStatus = document.querySelector("#auth-status");
+      const adminPassword = document.querySelector("#admin-password");
+      const adminPasswordConfirm = document.querySelector("#admin-password-confirm");
+      const confirmPasswordGroup = document.querySelector("#confirm-password-group");
+      const linkDialog = document.querySelector("#link-dialog");
+      const linkForm = document.querySelector("#link-form");
+      const linkStatus = document.querySelector("#link-status");
+      const fileDialog = document.querySelector("#file-dialog");
+      const fileDialogTitle = document.querySelector("#file-dialog-title");
+      const fileDialogDescription = document.querySelector("#file-dialog-description");
+      const fileDialogBody = document.querySelector("#file-dialog-body");
+      const saveFileEditButton = document.querySelector("#save-file-edit");
+      const cancelFileEditButton = document.querySelector("#cancel-file-edit");
+      const excelToolbar = document.querySelector("#excel-toolbar");
+      const excelCellAddress = document.querySelector("#excel-cell-address");
+      const excelFormulaInput = document.querySelector("#excel-formula-input");
+      const excelAdminLoginButton = document.querySelector("#excel-admin-login");
+      const excelAgentModeButton = document.querySelector("#excel-agent-mode");
+      let pendingFiles = [];
+      let allFiles = [];
+      let allLinks = [];
+      let profile = "agent";
+      let authMode = "login";
+      let adminCredential = null;
+      let activeFile = null;
+      let activePreviewUrl = null;
+      let editorHasChanges = false;
+      let activeCsv = null;
+      let activeWorkbook = null;
+      let spreadsheetLibraryPromise = null;
+      let excelLibraryPromise = null;
+      let hyperFormulaPromise = null;
+      let excelWorkspaceMode = false;
+
+      function applyTheme(theme, persist = false) {
+        const dark = theme === "dark";
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+        themeToggle.textContent = dark ? "Modo claro" : "Modo oscuro";
+        themeToggle.setAttribute("aria-pressed", String(dark));
+        document.querySelector('meta[name="theme-color"]').content = dark ? "#101923" : "#f2f6fb";
+        if (persist) {
+          try {
+            localStorage.setItem("nesting-library-theme", dark ? "dark" : "light");
+          } catch (error) {
+            statusMessage.textContent = "El tema cambió, pero el navegador no permitió guardar la preferencia.";
+            console.error(error);
+          }
+        }
+      }
+
+      function initializeTheme() {
+        let theme = "light";
+        try {
+          theme = localStorage.getItem("nesting-library-theme") ||
+            (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        } catch (error) {
+          statusMessage.textContent = "No se pudo leer la preferencia de tema; se usará el modo claro.";
+          console.error(error);
+        }
+        applyTheme(theme);
+      }
+
+      function resetPasswordVisibility() {
+        document.querySelectorAll("[data-password-toggle]").forEach((button) => {
+          const input = document.getElementById(button.dataset.passwordToggle);
+          input.type = "password";
+          button.textContent = "Mostrar";
+          button.setAttribute("aria-pressed", "false");
+        });
+      }
+
+      function togglePasswordVisibility(button) {
+        const input = document.getElementById(button.dataset.passwordToggle);
+        const showing = input.type === "text";
+        input.type = showing ? "password" : "text";
+        button.textContent = showing ? "Mostrar" : "Ocultar";
+        button.setAttribute("aria-pressed", String(!showing));
+      }
+
+      function openDatabase() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(databaseName, 3);
+          request.onupgradeneeded = () => {
+            const database = request.result;
+            if (!database.objectStoreNames.contains(storeName)) {
+              database.createObjectStore(storeName, { keyPath: "id" });
+            }
+            if (!database.objectStoreNames.contains(linksStoreName)) {
+              database.createObjectStore(linksStoreName, { keyPath: "id" });
+            }
+            if (!database.objectStoreNames.contains(settingsStoreName)) {
+              database.createObjectStore(settingsStoreName, { keyPath: "key" });
+            }
+          };
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      }
+
+      function getAllFiles(database) {
+        return new Promise((resolve, reject) => {
+          const request = database.transaction(storeName, "readonly").objectStore(storeName).getAll();
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      }
+
+      function saveFiles(database, files) {
+        return new Promise((resolve, reject) => {
+          const transaction = database.transaction(storeName, "readwrite");
+          const store = transaction.objectStore(storeName);
+          files.forEach((file) => store.add(file));
+          transaction.oncomplete = () => resolve();
+          transaction.onerror = () => reject(transaction.error);
+          transaction.onabort = () => reject(transaction.error);
+        });
+      }
+
+      function removeFile(database, id) {
+        return new Promise((resolve, reject) => {
+          const transaction = database.transaction(storeName, "readwrite");
+          transaction.objectStore(storeName).delete(id);
+          transaction.oncomplete = () => resolve();
+          transaction.onerror = () => reject(transaction.error);
+        });
+      }
+
+      function updateFile(database, file) {
+        return new Promise((resolve, reject) => {
+          const transaction = database.transaction(storeName, "readwrite");
+          transaction.objectStore(storeName).put(file);
+          transaction.oncomplete = () => resolve();
+          transaction.onerror = () => reject(transaction.error);
+          transaction.onabort = () => reject(transaction.error);
+        });
+      }
+
+      function getSetting(database, key) {
+        return new Promise((resolve, reject) => {
+          const request = database.transaction(settingsStoreName, "readonly").objectStore(settingsStoreName).get(key);
+          request.onsuccess = () => resolve(request.result ? request.result.value : null);
+          request.onerror = () => reject(request.error);
+        });
+      }
+
+      function saveSetting(database, key, value) {
+        return new Promise((resolve, reject) => {
+          const transaction = database.transaction(settingsStoreName, "readwrite");
+          transaction.objectStore(settingsStoreName).put({ key, value });
+          transaction.oncomplete = () => resolve();
+          transaction.onerror = () => reject(transaction.error);
+          transaction.onabort = () => reject(transaction.error);
+        });
+      }
+
+      function getAllLinks(database) {
+        return new Promise((resolve, reject) => {
+          const request = database.transaction(linksStoreName, "readonly").objectStore(linksStoreName).getAll();
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      }
+
+      function saveLink(database, link) {
+        return new Promise((resolve, reject) => {
+          const transaction = database.transaction(linksStoreName, "readwrite");
+          transaction.objectStore(linksStoreName).add(link);
+          transaction.oncomplete = () => resolve();
+          transaction.onerror = () => reject(transaction.error);
+          transaction.onabort = () => reject(transaction.error);
+        });
+      }
+
+      function removeLink(database, id) {
+        return new Promise((resolve, reject) => {
+          const transaction = database.transaction(linksStoreName, "readwrite");
+          transaction.objectStore(linksStoreName).delete(id);
+          transaction.oncomplete = () => resolve();
+          transaction.onerror = () => reject(transaction.error);
+          transaction.onabort = () => reject(transaction.error);
+        });
+      }
+
+      function bytesToHex(bytes) {
+        return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+      }
+
+      function hexToBytes(hex) {
+        return Uint8Array.from(hex.match(/.{2}/g), (byte) => Number.parseInt(byte, 16));
+      }
+
+      async function derivePasswordHash(password, salt) {
+        if (!window.crypto || !window.crypto.subtle) {
+          throw new Error("Web Crypto no está disponible en este navegador.");
+        }
+        const key = await window.crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
+        const bits = await window.crypto.subtle.deriveBits({
+          name: "PBKDF2",
+          salt,
+          iterations: 250000,
+          hash: "SHA-256"
+        }, key, 256);
+        return new Uint8Array(bits);
+      }
+
+      function isAdmin() {
+        return profile === "admin";
+      }
+
+      function openWorkbookInNewTab(file) {
+        const editorUrl = new URL(window.location.href);
+        editorUrl.searchParams.set("workbook", file.id);
+        let newTab;
+        try {
+          newTab = window.open(editorUrl.href, "_blank");
+        } catch (error) {
+          console.error(error);
+          return false;
+        }
+        if (!newTab) return false;
+        newTab.opener = null;
+        return true;
+      }
+
+      async function startWorkbookTab() {
+        const workbookId = new URLSearchParams(window.location.search).get("workbook");
+        if (!workbookId) return;
+        excelWorkspaceMode = true;
+        document.body.classList.add("excel-workspace");
+        fileDialog.classList.add("excel-fullscreen");
+        fileDialogTitle.textContent = "Abriendo libro…";
+        document.querySelector("#close-file-dialog").textContent = "Volver a biblioteca";
+        excelToolbar.hidden = false;
+        updateProfileUI();
+        await Promise.all([loadAdminCredential(), refreshFiles(), refreshLinks()]);
+        const file = allFiles.find((item) => item.id === workbookId);
+        if (!file) {
+          fileDialogTitle.textContent = "No se encontró el archivo";
+          fileDialogDescription.textContent = "Regresa a la biblioteca y vuelve a abrir el libro.";
+          fileDialog.showModal();
+          return;
+        }
+        try {
+          await openFile(file);
+        } catch (error) {
+          statusMessage.textContent = "No se pudo iniciar el editor de Excel.";
+          console.error(error);
+        }
+      }
+
+      function updateProfileUI() {
+        profileLabel.textContent = isAdmin() ? "Perfil: administrador" : "Perfil: agente (solo lectura)";
+        adminLoginButton.hidden = isAdmin();
+        adminLoginButton.textContent = adminCredential ? "Entrar como administrador" : "Configurar administrador";
+        agentModeButton.hidden = !isAdmin();
+        uploadButton.hidden = !isAdmin();
+        dropZone.hidden = !isAdmin();
+        addLinkButton.hidden = !isAdmin();
+        excelAdminLoginButton.hidden = !excelWorkspaceMode || isAdmin();
+        excelAgentModeButton.hidden = !excelWorkspaceMode || !isAdmin();
+        excelFormulaInput.readOnly = !isAdmin();
+        renderFiles();
+        renderLinks();
+        if (activeWorkbook && activeWorkbook.kind === "exceljs" && excelWorkspaceMode) renderWorkbookSheet();
+      }
+
+      function showAdminAuth() {
+        authMode = adminCredential ? "login" : "setup";
+        authTitle.textContent = authMode === "setup" ? "Configurar administrador" : "Entrar como administrador";
+        authHelp.textContent = authMode === "setup"
+          ? "Crea una contraseña de al menos 10 caracteres. Se guardará un verificador derivado en este navegador; no compartas esta contraseña."
+          : "Ingresa la contraseña del administrador para habilitar la edición en este navegador.";
+        confirmPasswordGroup.hidden = authMode !== "setup";
+        adminPasswordConfirm.required = authMode === "setup";
+        adminPassword.autocomplete = authMode === "setup" ? "new-password" : "current-password";
+        authStatus.textContent = "";
+        authForm.reset();
+        resetPasswordVisibility();
+        authDialog.showModal();
+        adminPassword.focus();
+      }
+
+      async function loadAdminCredential() {
+        adminCredential = await getSetting(await openDatabase(), "adminCredential");
+        try {
+          profile = adminCredential && sessionStorage.getItem("nesting-admin-session") === "active" ? "admin" : "agent";
+        } catch (error) {
+          profile = "agent";
+          console.error(error);
+        }
+        updateProfileUI();
+      }
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, (character) => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"
+        })[character]);
+      }
+
+      function formatSize(bytes) {
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+      }
+
+      function formatDate(value) {
+        return new Intl.DateTimeFormat("es-MX", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value));
+      }
+
+      function fileType(name) {
+        const extension = name.includes(".") ? name.split(".").pop() : "FILE";
+        return extension.slice(0, 5).toUpperCase();
+      }
+
+      function fileExtension(name) {
+        return name.includes(".") ? name.split(".").pop().toLocaleLowerCase("en") : "";
+      }
+
+      function releasePreviewUrl() {
+        if (activePreviewUrl) URL.revokeObjectURL(activePreviewUrl);
+        activePreviewUrl = null;
+      }
+
+      function detectCsvDelimiter(text) {
+        const firstLine = text.split(/\r\n|\n|\r/, 1)[0];
+        const counts = [",", ";", "\t"].map((delimiter) => {
+          let quoted = false;
+          let count = 0;
+          for (let index = 0; index < firstLine.length; index += 1) {
+            if (firstLine[index] === '"') {
+              if (quoted && firstLine[index + 1] === '"') index += 1;
+              else quoted = !quoted;
+            } else if (!quoted && firstLine[index] === delimiter) {
+              count += 1;
+            }
+          }
+          return count;
+        });
+        const bestIndex = counts.indexOf(Math.max(...counts));
+        return counts[bestIndex] === 0 ? "," : [",", ";", "\t"][bestIndex];
+      }
+
+      function parseCsv(text, delimiter) {
+        const rows = [];
+        let row = [];
+        let cell = "";
+        let quoted = false;
+        for (let index = 0; index < text.length; index += 1) {
+          const character = text[index];
+          if (character === '"') {
+            if (quoted && text[index + 1] === '"') {
+              cell += '"';
+              index += 1;
+            } else {
+              quoted = !quoted;
+            }
+          } else if (!quoted && character === delimiter) {
+            row.push(cell);
+            cell = "";
+          } else if (!quoted && (character === "\n" || character === "\r")) {
+            if (character === "\r" && text[index + 1] === "\n") index += 1;
+            row.push(cell);
+            rows.push(row);
+            row = [];
+            cell = "";
+          } else {
+            cell += character;
+          }
+        }
+        if (cell.length > 0 || row.length > 0 || (text.length > 0 && !/[\r\n]$/.test(text))) {
+          row.push(cell);
+          rows.push(row);
+        }
+        return rows.length ? rows : [[""]];
+      }
+
+      function encodeCsv(rows, delimiter) {
+        return rows.map((row) => row.map((value) => {
+          const cell = String(value ?? "");
+          return cell.includes('"') || cell.includes("\n") || cell.includes("\r") || cell.includes(delimiter)
+            ? `"${cell.replace(/"/g, '""')}"`
+            : cell;
+        }).join(delimiter)).join("\r\n");
+      }
+
+      function columnLabel(index) {
+        let label = "";
+        let value = index + 1;
+        while (value > 0) {
+          value -= 1;
+          label = String.fromCharCode(65 + (value % 26)) + label;
+          value = Math.floor(value / 26);
+        }
+        return label;
+      }
+
+      function renderSpreadsheetGrid(rows, options = {}) {
+        const maxRows = 500;
+        const maxColumns = 50;
+        const visibleRows = rows.slice(0, maxRows);
+        const columnCount = Math.min(maxColumns, Math.max(1, options.columnCount || 0, ...visibleRows.map((row) => row.length)));
+        const view = document.createElement("div");
+        view.className = "spreadsheet-view";
+
+        const notice = document.createElement("p");
+        notice.className = "spreadsheet-notice";
+        notice.textContent = options.notice || "Vista de hoja de cálculo.";
+        if (rows.length > maxRows || (options.totalRows || 0) > maxRows ||
+            (options.columnCount || 0) > maxColumns || (options.totalColumns || 0) > maxColumns) {
+          notice.textContent += ` Se muestran hasta ${maxRows} filas y ${maxColumns} columnas.`;
+        }
+        view.append(notice);
+
+        const scrollArea = document.createElement("div");
+        scrollArea.className = "spreadsheet-grid-wrap";
+        const table = document.createElement("table");
+        table.className = "spreadsheet-grid";
+        const head = document.createElement("thead");
+        const headerRow = document.createElement("tr");
+        const corner = document.createElement("th");
+        corner.scope = "col";
+        corner.textContent = "#";
+        headerRow.append(corner);
+        for (let column = 0; column < columnCount; column += 1) {
+          const header = document.createElement("th");
+          header.scope = "col";
+          header.textContent = columnLabel((options.columnOffset || 0) + column);
+          headerRow.append(header);
+        }
+        head.append(headerRow);
+        table.append(head);
+
+        const body = document.createElement("tbody");
+        visibleRows.forEach((row, rowIndex) => {
+          const tableRow = document.createElement("tr");
+          const rowHeader = document.createElement("th");
+          rowHeader.scope = "row";
+          rowHeader.textContent = String((options.rowOffset || 0) + rowIndex + 1);
+          tableRow.append(rowHeader);
+          for (let column = 0; column < columnCount; column += 1) {
+            const cell = document.createElement("td");
+            cell.textContent = String(row[column] ?? "");
+            if (options.editable) {
+              cell.contentEditable = "true";
+              cell.dataset.row = String(rowIndex);
+              cell.dataset.column = String(column);
+            }
+            tableRow.append(cell);
+          }
+          body.append(tableRow);
+        });
+        table.append(body);
+        scrollArea.append(table);
+        view.append(scrollArea);
+        fileDialogBody.append(view);
+
+        if (options.editable) {
+          table.addEventListener("input", (event) => {
+            const cell = event.target.closest("td[contenteditable=true]");
+            if (!cell || !activeCsv) return;
+            const rowIndex = Number(cell.dataset.row);
+            const column = Number(cell.dataset.column);
+            while (activeCsv.rows[rowIndex].length <= column) activeCsv.rows[rowIndex].push("");
+            activeCsv.rows[rowIndex][column] = cell.textContent;
+            editorHasChanges = true;
+            saveFileEditButton.hidden = false;
+            cancelFileEditButton.hidden = false;
+          });
+        }
+      }
+
+      function renderActiveCsv() {
+        const rows = activeCsv.rows;
+        const totalColumns = rows.reduce((count, row) => Math.max(count, row.length), 0);
+        renderSpreadsheetGrid(rows, {
+          editable: isAdmin(),
+          totalRows: rows.length,
+          totalColumns,
+          notice: isAdmin() ? "Vista tipo Excel. Edita las celdas y guarda los cambios." : "Vista de solo lectura tipo Excel."
+        });
+      }
+
+      function renderCsv(file, text) {
+        const contents = text.replace(/^\uFEFF/, "");
+        const delimiter = detectCsvDelimiter(contents);
+        const rows = parseCsv(contents, delimiter);
+        activeCsv = {
+          delimiter,
+          rows,
+          originalRows: rows.map((row) => row.slice())
+        };
+        fileDialogDescription.textContent = `${file.category} · ${formatSize(file.size)} · CSV`;
+        renderActiveCsv();
+      }
+
+      async function loadSpreadsheetLibrary() {
+        if (window.XLSX) return window.XLSX;
+        if (!spreadsheetLibraryPromise) {
+          spreadsheetLibraryPromise = new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js";
+            script.integrity = "sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT";
+            script.crossOrigin = "anonymous";
+            script.referrerPolicy = "no-referrer";
+            script.onload = () => window.XLSX ? resolve(window.XLSX) : reject(new Error("La biblioteca de hojas de cálculo no se inicializó."));
+            script.onerror = () => reject(new Error("No se pudo descargar la biblioteca de hojas de cálculo."));
+            document.head.append(script);
+          }).catch((error) => {
+            spreadsheetLibraryPromise = null;
+            throw error;
+          });
+        }
+        return spreadsheetLibraryPromise;
+      }
+
+      async function loadExcelLibrary() {
+        if (window.ExcelJS) return window.ExcelJS;
+        if (!excelLibraryPromise) {
+          excelLibraryPromise = new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = "https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js";
+            script.integrity = "sha384-Pqp51FUN2/qzfxZxBCtF0stpc9ONI6MYZpVqmo8m20SoaQCzf+arZvACkLkirlPz";
+            script.crossOrigin = "anonymous";
+            script.referrerPolicy = "no-referrer";
+            script.onload = () => window.ExcelJS ? resolve(window.ExcelJS) : reject(new Error("El editor de Excel no se inicializó."));
+            script.onerror = () => reject(new Error("No se pudo descargar el editor de Excel."));
+            document.head.append(script);
+          }).catch((error) => {
+            excelLibraryPromise = null;
+            throw error;
+          });
+        }
+        return excelLibraryPromise;
+      }
+
+      async function loadHyperFormula() {
+        if (window.HyperFormula) return window.HyperFormula;
+        if (!hyperFormulaPromise) {
+          hyperFormulaPromise = new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = "https://cdn.jsdelivr.net/npm/hyperformula@3.1.1/dist/hyperformula.full.min.js";
+            script.integrity = "sha384-dFTvjF4940Eb6OiyW5DhutPFRpjGCX8WXz2oG9v9QmSnn/xBZ9FVnIS5hfUZQmdE";
+            script.crossOrigin = "anonymous";
+            script.referrerPolicy = "no-referrer";
+            script.onload = () => window.HyperFormula ? resolve(window.HyperFormula) : reject(new Error("El motor de fórmulas no se inicializó."));
+            script.onerror = () => reject(new Error("No se pudo descargar el motor de fórmulas."));
+            document.head.append(script);
+          }).catch((error) => {
+            hyperFormulaPromise = null;
+            throw error;
+          });
+        }
+        return hyperFormulaPromise;
+      }
+
+      function excelDateSerial(date) {
+        return date.getTime() / 86400000 + 25569;
+      }
+
+      function toFormulaInput(cell) {
+        const value = cell.value;
+        if (value === null || value === undefined) return null;
+        if (value instanceof Date) return excelDateSerial(value);
+        if (typeof value === "object") {
+          if (value.formula) return `=${value.formula}`;
+          if (Array.isArray(value.richText)) return value.richText.map((part) => part.text || "").join("");
+          if (value.text !== undefined) return value.text;
+          if (value.hyperlink) return value.text || value.hyperlink;
+          if (value.error) return value.error;
+          return null;
+        }
+        return value;
+      }
+
+      async function initializeFormulaEngine(workbook) {
+        const HyperFormula = await loadHyperFormula();
+        const sheets = Object.create(null);
+        workbook.worksheets.forEach((worksheet) => {
+          const rows = [];
+          worksheet.eachRow({ includeEmpty: false }, (row) => {
+            const values = [];
+            row.eachCell({ includeEmpty: true }, (cell, columnNumber) => {
+              values[columnNumber - 1] = toFormulaInput(cell);
+            });
+            rows[row.number - 1] = values;
+          });
+          if (rows.length === 0) rows.push([]);
+          sheets[worksheet.name] = rows;
+        });
+        const engine = HyperFormula.buildFromSheets(sheets, {
+          licenseKey: "gpl-v3",
+          language: "enGB",
+          maxRows: 1048576,
+          maxColumns: 16384,
+          useArrayArithmetic: true,
+          leapYear1900: true
+        });
+        const sheetIds = new Map(workbook.worksheets.map((worksheet) => [worksheet.name, engine.getSheetId(worksheet.name)]));
+        return { engine, sheetIds, HyperFormula };
+      }
+
+      function recalculateWorkbookCell(workbookState, worksheet, cell) {
+        const formulaSheetId = workbookState.sheetIds.get(worksheet.name);
+        if (formulaSheetId === undefined) return null;
+        const result = workbookState.engine.getCellValue({
+          sheet: formulaSheetId,
+          row: cell.row - 1,
+          col: cell.col - 1
+        });
+        if (result && typeof result === "object" && typeof result.toString === "function") {
+          return result.toString();
+        }
+        return result;
+      }
+
+      function updateFormulaEngineCell(workbookState, worksheet, cell, value) {
+        const formulaSheetId = workbookState.sheetIds.get(worksheet.name);
+        if (formulaSheetId === undefined) throw new Error(`No se encontró la hoja "${worksheet.name}" en el motor de fórmulas.`);
+        workbookState.engine.setCellContents({
+          sheet: formulaSheetId,
+          row: cell.row - 1,
+          col: cell.col - 1
+        }, [[value]]);
+      }
+
+      function storeFormulaResults(workbookState, workbook) {
+        workbook.worksheets.forEach((worksheet) => {
+          const formulaSheetId = workbookState.sheetIds.get(worksheet.name);
+          worksheet.eachRow({ includeEmpty: false }, (row) => {
+            row.eachCell({ includeEmpty: false }, (cell) => {
+              const existing = cell.value;
+              if (!existing || typeof existing !== "object" || !existing.formula) return;
+              const result = workbookState.engine.getCellValue({
+                sheet: formulaSheetId,
+                row: cell.row - 1,
+                col: cell.col - 1
+              });
+              cell.value = {
+                ...existing,
+                result: result && typeof result === "object" && typeof result.toString === "function"
+                  ? result.toString()
+                  : result
+              };
+            });
+          });
+        });
+      }
+
+      function parseExcelAddress(address) {
+        const match = /^([A-Z]+)(\d+)$/i.exec(address);
+        if (!match) return null;
+        let column = 0;
+        for (const character of match[1].toUpperCase()) {
+          column = column * 26 + character.charCodeAt(0) - 64;
+        }
+        return { row: Number(match[2]), column };
+      }
+
+      function excelColor(color) {
+        if (!color) return null;
+        const argb = color.argb || color.rgb;
+        if (argb && /^[\da-f]{6,8}$/i.test(argb)) return `#${argb.slice(-6)}`;
+        const themeColors = ["#ffffff", "#000000", "#e7e6e6", "#44546a", "#5b9bd5", "#ed7d31", "#a5a5a5", "#ffc000", "#4472c4", "#70ad47"];
+        return Number.isInteger(color.theme) ? themeColors[color.theme] || null : null;
+      }
+
+      function applyExcelCellStyle(element, cell) {
+        const style = cell.style || {};
+        const font = style.font || {};
+        const fill = style.fill || {};
+        const alignment = style.alignment || {};
+        const color = excelColor(font.color);
+        const background = excelColor(fill.fgColor);
+        if (color) element.style.color = color;
+        if (background && fill.type === "pattern" && fill.pattern === "solid") element.style.backgroundColor = background;
+        if (font.bold) element.style.fontWeight = "700";
+        if (font.italic) element.style.fontStyle = "italic";
+        if (font.underline) element.style.textDecoration = "underline";
+        if (font.strike) element.style.textDecoration = "line-through";
+        if (font.size) element.style.fontSize = `${Math.max(8, Math.min(28, font.size))}px`;
+        if (font.name && /^[\w\s-]{1,50}$/.test(font.name)) element.style.fontFamily = `"${font.name}", sans-serif`;
+        if (alignment.horizontal === "center" || alignment.horizontal === "right") {
+          element.style.textAlign = alignment.horizontal;
+        } else if (alignment.horizontal === "left") {
+          element.style.textAlign = "left";
+        }
+        if (alignment.vertical === "middle") element.style.verticalAlign = "middle";
+        if (alignment.vertical === "bottom") element.style.verticalAlign = "bottom";
+        if (alignment.wrapText) element.style.whiteSpace = "pre-wrap";
+        if (alignment.indent) element.style.paddingLeft = `${9 + Math.min(alignment.indent, 8) * 12}px`;
+
+        const cssBorders = { thin: "1px solid", hair: "1px solid", medium: "2px solid", thick: "3px solid", dashed: "1px dashed", dotted: "1px dotted", double: "3px double" };
+        ["top", "right", "bottom", "left"].forEach((side) => {
+          const border = style.border && style.border[side];
+          if (!border || !border.style) return;
+          const css = cssBorders[border.style] || "1px solid";
+          const borderColor = excelColor(border.color) || "var(--line)";
+          element.style.setProperty(`border-${side}`, `${css} ${borderColor}`);
+        });
+      }
+
+      function excelCellText(cell, calculatedValue = undefined) {
+        let value = cell.value;
+        if (value && typeof value === "object" && value.formula && calculatedValue !== undefined) {
+          value = calculatedValue;
+        }
+        if (value === null || value === undefined) return "";
+        if (value instanceof Date) return new Intl.DateTimeFormat("es-MX", { dateStyle: "short", timeStyle: "short" }).format(value);
+        if (typeof value === "object") {
+          if (value.formula) return value.result === undefined ? `=${value.formula}` : String(value.result);
+          if (Array.isArray(value.richText)) return value.richText.map((part) => part.text || "").join("");
+          if (value.text !== undefined) return String(value.text);
+          if (value.error) return String(value.error);
+          return "";
+        }
+        if (typeof value === "number" && cell.numFmt) {
+          if (cell.numFmt.includes("%")) {
+            const decimals = (cell.numFmt.split(".")[1] || "").replace(/[^0#].*$/, "").length;
+            return `${(value * 100).toFixed(Math.min(decimals, 8))}%`;
+          }
+          const decimals = cell.numFmt.includes(".") ? (cell.numFmt.split(".")[1] || "").replace(/[^0#].*$/, "").length : null;
+          if ((decimals !== null && decimals <= 8) || /#,##0/.test(cell.numFmt)) {
+            const currency = cell.numFmt.includes("$") ? "USD"
+              : cell.numFmt.includes("€") ? "EUR"
+                : cell.numFmt.includes("£") ? "GBP"
+                  : cell.numFmt.includes("¥") ? "JPY" : null;
+            return new Intl.NumberFormat("es-MX", {
+              ...(currency ? { style: "currency", currency } : {}),
+              useGrouping: /,/.test(cell.numFmt),
+              minimumFractionDigits: decimals === null ? 0 : Math.min(decimals, 8),
+              maximumFractionDigits: decimals === null ? 0 : Math.min(decimals, 8)
+            }).format(value);
+          }
+        }
+        return String(value);
+      }
+
+      function setExcelCellValue(cell, text) {
+        if (text.startsWith("=") && text.length > 1) {
+          cell.value = { formula: text.slice(1) };
+        } else if (text.trim() === "") {
+          cell.value = null;
+        } else if (/^-?(?:\d+\.?\d*|\.\d+)$/.test(text.trim())) {
+          cell.value = Number(text.trim());
+        } else {
+          cell.value = text;
+        }
+      }
+
+      function setSelectedExcelCell(row, column, focusInput = false) {
+        if (!activeWorkbook) return;
+        const worksheet = activeWorkbook.workbook.getWorksheet(activeWorkbook.sheetName);
+        const cell = worksheet.getCell(row, column);
+        const selected = fileDialogBody.querySelector(".excel-selected");
+        if (selected) selected.classList.remove("excel-selected");
+        activeWorkbook.selectedCell = { row, column };
+        excelCellAddress.value = cell.address;
+        const value = cell.value;
+        excelFormulaInput.value = value && typeof value === "object" && value.formula
+          ? `=${value.formula}`
+          : value instanceof Date ? value.toISOString().slice(0, 10)
+            : value === null || value === undefined ? "" : excelCellText(cell);
+        excelFormulaInput.readOnly = !isAdmin();
+        const visibleCell = fileDialogBody.querySelector(`td[data-row="${row}"][data-column="${column}"]`);
+        if (visibleCell) visibleCell.classList.add("excel-selected");
+        if (focusInput) excelFormulaInput.focus();
+      }
+
+      function commitExcelCell(row, column, text) {
+        if (!activeWorkbook || !isAdmin()) return;
+        const worksheet = activeWorkbook.workbook.getWorksheet(activeWorkbook.sheetName);
+        const cell = worksheet.getCell(row, column);
+        setExcelCellValue(cell, text);
+        updateFormulaEngineCell(activeWorkbook.formulaState, worksheet, cell, toFormulaInput(cell));
+        activeWorkbook.selectedCell = { row, column };
+        editorHasChanges = true;
+        saveFileEditButton.textContent = "Guardar Excel";
+        saveFileEditButton.hidden = false;
+        cancelFileEditButton.hidden = false;
+      }
+
+      function prefixOffsets(length, measure) {
+        const offsets = new Float64Array(length + 1);
+        for (let index = 1; index <= length; index += 1) {
+          offsets[index] = offsets[index - 1] + measure(index);
+        }
+        return offsets;
+      }
+
+      function findOffsetIndex(offsets, position) {
+        let low = 0;
+        let high = offsets.length - 1;
+        while (low < high) {
+          const middle = Math.floor((low + high) / 2);
+          if (offsets[middle + 1] <= position) low = middle + 1;
+          else high = middle;
+        }
+        return Math.min(low, offsets.length - 2);
+      }
+
+      function renderExcelJsWorkbookSheet() {
+        if (!activeWorkbook) return;
+        const { workbook, sheetName } = activeWorkbook;
+        const worksheet = workbook.getWorksheet(sheetName);
+        const totalRows = 1048576;
+        const totalColumns = 16384;
+        const previousViewport = fileDialogBody.querySelector(".spreadsheet-grid-wrap");
+        const previousScrollTop = previousViewport ? previousViewport.scrollTop : 0;
+        const previousScrollLeft = previousViewport ? previousViewport.scrollLeft : 0;
+        const view = document.createElement("div");
+        view.className = "spreadsheet-view";
+        const notice = document.createElement("p");
+        notice.className = "spreadsheet-notice";
+        notice.textContent = isAdmin()
+          ? "Editor de Excel con fórmulas: selecciona una celda, escribe un valor o fórmula en la barra y guarda. Desplázate por toda la hoja."
+          : "Vista de solo lectura. Inicia sesión como administrador para editar celdas y fórmulas.";
+        notice.append(" Motor HyperFormula: GPLv3; incluye muchas, pero no todas, las funciones de Excel.");
+        const license = document.createElement("a");
+        license.href = "https://github.com/handsontable/hyperformula";
+        license.target = "_blank";
+        license.rel = "noopener noreferrer";
+        license.textContent = "Licencia y código fuente";
+        notice.append(" ", license);
+        view.append(notice);
+
+        const tabs = document.createElement("div");
+        tabs.className = "spreadsheet-tabs";
+        tabs.setAttribute("role", "tablist");
+        tabs.setAttribute("aria-label", "Hojas del libro");
+        workbook.worksheets.forEach((tabWorksheet) => {
+          const tab = document.createElement("button");
+          tab.type = "button";
+          tab.className = "spreadsheet-tab";
+          tab.setAttribute("role", "tab");
+          tab.setAttribute("aria-selected", String(tabWorksheet.name === sheetName));
+          tab.textContent = tabWorksheet.name;
+          tab.addEventListener("click", () => {
+            activeWorkbook.sheetName = tabWorksheet.name;
+            const selected = activeWorkbook.selectedCell || { row: 1, column: 1 };
+            setSelectedExcelCell(Math.min(selected.row, Math.max(tabWorksheet.rowCount, 1)), Math.min(selected.column, Math.max(tabWorksheet.columnCount, 1)));
+          });
+          tabs.append(tab);
+        });
+        view.append(tabs);
+
+        const scrollArea = document.createElement("div");
+        scrollArea.className = "spreadsheet-grid-wrap";
+        scrollArea.setAttribute("role", "grid");
+        scrollArea.setAttribute("aria-label", `Hoja ${sheetName}`);
+        scrollArea.tabIndex = 0;
+        if (!activeWorkbook.layouts) activeWorkbook.layouts = new Map();
+        if (!activeWorkbook.layouts.has(sheetName)) {
+          const rowMetrics = new Map();
+          worksheet.eachRow({ includeEmpty: false }, (row) => {
+            if (row.hidden || row.height) {
+              rowMetrics.set(row.number, row.hidden ? 0 : Math.max(20, Math.min(160, row.height * 4 / 3)));
+            }
+          });
+          const columnMetrics = new Map();
+          for (let columnIndex = 1; columnIndex <= totalColumns; columnIndex += 1) {
+            const column = worksheet.getColumn(columnIndex);
+            if (column.hidden || column.width) {
+              columnMetrics.set(columnIndex, column.hidden ? 0 : Math.max(48, Math.min(360, column.width * 7)));
+            }
+          }
+          activeWorkbook.layouts.set(sheetName, {
+            rowOffsets: prefixOffsets(totalRows, (rowIndex) => rowMetrics.get(rowIndex) ?? 25),
+            columnOffsets: prefixOffsets(totalColumns, (columnIndex) => columnMetrics.get(columnIndex) ?? 110)
+          });
+        }
+        const { rowOffsets, columnOffsets } = activeWorkbook.layouts.get(sheetName);
+        const totalHeight = rowOffsets[totalRows];
+        const totalWidth = columnOffsets[totalColumns];
+        const merges = (worksheet.model.merges || []).map((range) => {
+          const [start, end] = range.split(":").map(parseExcelAddress);
+          return start && end ? { start, end } : null;
+        }).filter(Boolean);
+
+        const table = document.createElement("table");
+        table.className = "spreadsheet-grid";
+        table.style.width = `${48 + totalWidth}px`;
+        table.style.tableLayout = "fixed";
+        const head = document.createElement("thead");
+        const body = document.createElement("tbody");
+        table.append(head, body);
+        scrollArea.append(table);
+        view.append(scrollArea);
+        fileDialogBody.replaceChildren(view);
+        scrollArea.scrollTop = previousScrollTop;
+        scrollArea.scrollLeft = previousScrollLeft;
+        saveFileEditButton.hidden = !editorHasChanges;
+        cancelFileEditButton.hidden = !editorHasChanges;
+        saveFileEditButton.textContent = "Guardar Excel";
+
+        const rowHeight = 25;
+        const columnWidth = 110;
+        const renderWindow = () => {
+          const top = Math.max(0, scrollArea.scrollTop);
+          const left = Math.max(0, scrollArea.scrollLeft);
+          const viewportHeight = Math.max(scrollArea.clientHeight, rowHeight * 20);
+          const viewportWidth = Math.max(scrollArea.clientWidth, columnWidth * 8);
+          const startRow = findOffsetIndex(rowOffsets, top);
+          const endRow = Math.min(totalRows, findOffsetIndex(rowOffsets, top + viewportHeight) + 2);
+          const startColumn = findOffsetIndex(columnOffsets, left);
+          const endColumn = Math.min(totalColumns, findOffsetIndex(columnOffsets, left + viewportWidth) + 2);
+          const leftWidth = columnOffsets[startColumn];
+          const rightWidth = totalWidth - columnOffsets[endColumn];
+          head.replaceChildren();
+          body.replaceChildren();
+          const headerRow = document.createElement("tr");
+          const corner = document.createElement("th");
+          corner.className = "excel-row-header";
+          corner.textContent = "#";
+          headerRow.append(corner);
+          if (leftWidth > 0) {
+            const spacer = document.createElement("th");
+            spacer.className = "excel-spacer";
+            spacer.style.width = `${leftWidth}px`;
+            headerRow.append(spacer);
+          }
+          for (let column = startColumn + 1; column <= endColumn; column += 1) {
+            if (!columnOffsets[column] || columnOffsets[column] === columnOffsets[column - 1]) continue;
+            const heading = document.createElement("th");
+            heading.className = "excel-column-header";
+            heading.textContent = columnLabel(column - 1);
+            heading.style.width = `${columnOffsets[column] - columnOffsets[column - 1]}px`;
+            headerRow.append(heading);
+          }
+          if (rightWidth > 0) {
+            const spacer = document.createElement("th");
+            spacer.className = "excel-spacer";
+            spacer.style.width = `${rightWidth}px`;
+            headerRow.append(spacer);
+          }
+          head.append(headerRow);
+
+          if (rowOffsets[startRow] > 0) {
+            const spacerRow = document.createElement("tr");
+            const spacerCell = document.createElement("td");
+            spacerCell.colSpan = endColumn - startColumn + 3;
+            spacerCell.style.height = `${rowOffsets[startRow]}px`;
+            spacerCell.className = "excel-spacer";
+            spacerRow.append(spacerCell);
+            body.append(spacerRow);
+          }
+
+          for (let rowIndex = startRow + 1; rowIndex <= endRow; rowIndex += 1) {
+            const height = rowOffsets[rowIndex] - rowOffsets[rowIndex - 1];
+            if (!height) continue;
+            const worksheetRow = worksheet.getRow(rowIndex);
+            const tableRow = document.createElement("tr");
+            tableRow.dataset.excelRow = String(rowIndex);
+            tableRow.style.height = `${height}px`;
+            const heading = document.createElement("th");
+            heading.className = "excel-row-header";
+            heading.scope = "row";
+            heading.textContent = String(rowIndex);
+            tableRow.append(heading);
+            if (leftWidth > 0) {
+              const spacer = document.createElement("td");
+              spacer.className = "excel-spacer";
+              spacer.style.width = `${leftWidth}px`;
+              tableRow.append(spacer);
+            }
+
+            for (let column = startColumn + 1; column <= endColumn; column += 1) {
+              const width = columnOffsets[column] - columnOffsets[column - 1];
+              if (!width) continue;
+              const cell = worksheetRow.getCell(column);
+              if (cell.isMerged && cell.master.address !== cell.address) continue;
+              const td = document.createElement("td");
+              td.style.width = `${width}px`;
+              const merge = merges.find((item) => item.start.row === rowIndex && item.start.column === column);
+              if (merge) {
+                td.rowSpan = Math.max(1, merge.end.row - merge.start.row + 1);
+                td.colSpan = Math.max(1, Math.min(merge.end.column, endColumn) - column + 1);
+              }
+              const value = cell.value;
+              const formulaResult = value && typeof value === "object" && value.formula
+                ? recalculateWorkbookCell(activeWorkbook.formulaState, worksheet, cell)
+                : undefined;
+              td.textContent = excelCellText(cell, formulaResult);
+              if (typeof value === "number") td.classList.add("excel-number");
+              if (typeof formulaResult === "string" && formulaResult.startsWith("#")) td.classList.add("excel-error");
+              if (activeWorkbook.selectedCell && activeWorkbook.selectedCell.row === rowIndex && activeWorkbook.selectedCell.column === column) {
+                td.classList.add("excel-selected");
+              }
+              applyExcelCellStyle(td, cell);
+              td.dataset.row = String(rowIndex);
+              td.dataset.column = String(column);
+              if (isAdmin()) {
+                td.contentEditable = "true";
+                td.spellcheck = false;
+                td.setAttribute("aria-label", `${cell.address}: ${td.textContent || "celda vacía"}`);
+              }
+              tableRow.append(td);
+            }
+            if (rightWidth > 0) {
+              const spacer = document.createElement("td");
+              spacer.className = "excel-spacer";
+              spacer.style.width = `${rightWidth}px`;
+              tableRow.append(spacer);
+            }
+            body.append(tableRow);
+          }
+          if (rowOffsets[totalRows] > rowOffsets[endRow]) {
+            const spacerRow = document.createElement("tr");
+            const spacerCell = document.createElement("td");
+            spacerCell.colSpan = endColumn - startColumn + 3;
+            spacerCell.style.height = `${rowOffsets[totalRows] - rowOffsets[endRow]}px`;
+            spacerCell.className = "excel-spacer";
+            spacerRow.append(spacerCell);
+            body.append(spacerRow);
+          }
+          setSelectedExcelCell(activeWorkbook.selectedCell.row, activeWorkbook.selectedCell.column);
+        };
+        let renderScheduled = false;
+        scrollArea.addEventListener("scroll", () => {
+          if (renderScheduled) return;
+          renderScheduled = true;
+          requestAnimationFrame(() => {
+            renderScheduled = false;
+            renderWindow();
+          });
+        });
+        scrollArea.addEventListener("click", (event) => {
+          const cellElement = event.target.closest("td[data-row][data-column]");
+          if (!cellElement) return;
+          setSelectedExcelCell(Number(cellElement.dataset.row), Number(cellElement.dataset.column));
+        });
+        scrollArea.addEventListener("input", (event) => {
+          const cellElement = event.target.closest('td[contenteditable="true"][data-row][data-column]');
+          if (!cellElement || !isAdmin()) return;
+          activeWorkbook.selectedCell = {
+            row: Number(cellElement.dataset.row),
+            column: Number(cellElement.dataset.column)
+          };
+          editorHasChanges = true;
+          saveFileEditButton.hidden = false;
+          cancelFileEditButton.hidden = false;
+          excelFormulaInput.value = cellElement.textContent;
+        });
+        scrollArea.addEventListener("focusout", (event) => {
+          const cellElement = event.target.closest('td[contenteditable="true"][data-row][data-column]');
+          if (!cellElement || !isAdmin()) return;
+          commitExcelCell(Number(cellElement.dataset.row), Number(cellElement.dataset.column), cellElement.textContent);
+          const currentCell = worksheet.getCell(Number(cellElement.dataset.row), Number(cellElement.dataset.column));
+          excelFormulaInput.value = currentCell.value && typeof currentCell.value === "object" && currentCell.value.formula
+            ? `=${currentCell.value.formula}`
+            : excelCellText(currentCell, recalculateWorkbookCell(activeWorkbook.formulaState, worksheet, currentCell));
+          requestAnimationFrame(renderWorkbookSheet);
+        });
+        scrollArea.addEventListener("keydown", (event) => {
+          const cellElement = event.target.closest('td[contenteditable="true"][data-row][data-column]');
+          if (!cellElement || !isAdmin() || !["Enter", "Tab"].includes(event.key)) return;
+          event.preventDefault();
+          const row = Number(cellElement.dataset.row);
+          const column = Number(cellElement.dataset.column);
+          commitExcelCell(row, column, cellElement.textContent);
+          const nextRow = event.key === "Enter" ? Math.min(totalRows, row + 1) : row;
+          const nextColumn = event.key === "Tab" ? Math.max(1, Math.min(totalColumns, column + (event.shiftKey ? -1 : 1))) : column;
+          activeWorkbook.selectedCell = { row: nextRow, column: nextColumn };
+          setSelectedExcelCell(nextRow, nextColumn);
+          const currentViewport = fileDialogBody.querySelector(".spreadsheet-grid-wrap");
+          if (currentViewport) currentViewport.querySelector(`td[data-row="${nextRow}"][data-column="${nextColumn}"]`)?.focus();
+        });
+        scrollArea.addEventListener("paste", (event) => {
+          const sourceCell = event.target.closest('td[data-row][data-column]');
+          if (!sourceCell || !isAdmin()) return;
+          const text = event.clipboardData.getData("text/plain");
+          if (!text.includes("\t") && !text.includes("\n") && !text.includes("\r")) return;
+          event.preventDefault();
+          const targetWorksheet = activeWorkbook.workbook.getWorksheet(activeWorkbook.sheetName);
+          const startRow = Number(sourceCell.dataset.row);
+          const startColumn = Number(sourceCell.dataset.column);
+          parseCsv(text, "\t").forEach((row, rowOffset) => {
+            row.forEach((value, columnOffset) => {
+              const target = targetWorksheet.getCell(startRow + rowOffset, startColumn + columnOffset);
+              setExcelCellValue(target, value);
+              updateFormulaEngineCell(activeWorkbook.formulaState, targetWorksheet, target, toFormulaInput(target));
+            });
+          });
+          editorHasChanges = true;
+          renderWorkbookSheet();
+        });
+        renderWindow();
+      }
+
+      function renderWorkbookSheet() {
+        if (!activeWorkbook) return;
+        if (activeWorkbook.kind === "exceljs") {
+          renderExcelJsWorkbookSheet();
+          return;
+        }
+        saveFileEditButton.textContent = "Guardar cambios";
+        saveFileEditButton.hidden = true;
+        cancelFileEditButton.hidden = true;
+        fileDialogBody.replaceChildren();
+        const tabs = document.createElement("div");
+        tabs.className = "spreadsheet-tabs";
+        tabs.setAttribute("role", "tablist");
+        tabs.setAttribute("aria-label", "Hojas del libro");
+        activeWorkbook.workbook.SheetNames.forEach((name) => {
+          const tab = document.createElement("button");
+          tab.type = "button";
+          tab.className = "spreadsheet-tab";
+          tab.setAttribute("role", "tab");
+          tab.setAttribute("aria-selected", String(name === activeWorkbook.sheetName));
+          tab.textContent = name;
+          tab.addEventListener("click", () => {
+            activeWorkbook.sheetName = name;
+            renderWorkbookSheet();
+          });
+          tabs.append(tab);
+        });
+        fileDialogBody.append(tabs);
+
+        const sheet = activeWorkbook.workbook.Sheets[activeWorkbook.sheetName];
+        const range = sheet["!ref"] ? window.XLSX.utils.decode_range(sheet["!ref"]) : { s: { c: 0, r: 0 }, e: { c: 0, r: 0 } };
+        const previewRange = {
+          s: range.s,
+          e: { r: Math.min(range.e.r, range.s.r + 499), c: Math.min(range.e.c, range.s.c + 49) }
+        };
+        const rows = window.XLSX.utils.sheet_to_json(sheet, { range: previewRange, header: 1, raw: false, defval: "", blankrows: true });
+        renderSpreadsheetGrid(rows, {
+          columnOffset: range.s.c,
+          rowOffset: range.s.r,
+          columnCount: range.e.c - range.s.c + 1,
+          totalRows: range.e.r - range.s.r + 1,
+          totalColumns: range.e.c - range.s.c + 1,
+          notice: "Este formato Excel se muestra en modo de lectura. Convierte el archivo a .xlsx para editarlo y conservar sus estilos."
+        });
+      }
+
+      async function openFile(file) {
+        activeFile = file;
+        activeCsv = null;
+        activeWorkbook = null;
+        editorHasChanges = false;
+        fileDialogTitle.textContent = file.name;
+        fileDialogDescription.textContent = `${file.category} · ${formatSize(file.size)}`;
+        fileDialogBody.replaceChildren();
+        saveFileEditButton.hidden = true;
+        saveFileEditButton.textContent = "Guardar cambios";
+        cancelFileEditButton.hidden = true;
+        releasePreviewUrl();
+
+        const extension = fileExtension(file.name);
+        if (extension === "csv") {
+          const text = await file.blob.text();
+          renderCsv(file, text);
+          fileDialog.showModal();
+          return;
+        }
+
+        if (extension === "xlsx") {
+          fileDialogDescription.textContent = `${file.category} · ${formatSize(file.size)} · Libro de Excel`;
+          const loadingMessage = document.createElement("div");
+          loadingMessage.className = "file-preview-message";
+          loadingMessage.textContent = "Abriendo el editor de Excel…";
+          fileDialogBody.append(loadingMessage);
+          fileDialog.showModal();
+          try {
+            const ExcelJS = await loadExcelLibrary();
+            const originalBytes = await file.blob.arrayBuffer();
+            const workbook = new ExcelJS.Workbook();
+            await workbook.xlsx.load(originalBytes);
+            if (workbook.worksheets.length === 0) {
+              throw new Error("El libro no contiene hojas para mostrar.");
+            }
+            const formulaState = await initializeFormulaEngine(workbook);
+            activeWorkbook = {
+              kind: "exceljs",
+              file,
+              workbook,
+              sheetName: workbook.worksheets[0].name,
+              originalBytes,
+              formulaState,
+              selectedCell: { row: 1, column: 1 }
+            };
+            saveFileEditButton.textContent = "Guardar Excel";
+            saveFileEditButton.hidden = true;
+            excelToolbar.hidden = false;
+            excelFormulaInput.value = "";
+            excelCellAddress.value = "A1";
+            renderWorkbookSheet();
+          } catch (error) {
+            const message = document.createElement("div");
+            message.className = "file-preview-message";
+            message.textContent = "No se pudo abrir este archivo .xlsx. Revisa que sea válido y que haya conexión a internet para cargar el editor.";
+            fileDialogBody.replaceChildren(message);
+            throw error;
+          }
+          return;
+        }
+
+        if (["xls", "xlsm", "xlsb", "ods"].includes(extension)) {
+          fileDialogDescription.textContent = `${file.category} · ${formatSize(file.size)} · Excel (solo lectura)`;
+          const loadingMessage = document.createElement("div");
+          loadingMessage.className = "file-preview-message";
+          loadingMessage.textContent = "Abriendo el libro de Excel…";
+          fileDialogBody.append(loadingMessage);
+          fileDialog.showModal();
+          try {
+            const XLSX = await loadSpreadsheetLibrary();
+            const workbook = XLSX.read(await file.blob.arrayBuffer(), { type: "array", cellDates: false, cellStyles: true });
+            if (workbook.SheetNames.length === 0) throw new Error("El libro no contiene hojas para mostrar.");
+            activeWorkbook = { kind: "sheetjs", file, workbook, sheetName: workbook.SheetNames[0] };
+            renderWorkbookSheet();
+          } catch (error) {
+            const message = document.createElement("div");
+            message.className = "file-preview-message";
+            message.textContent = "No se pudo abrir este libro. Revisa que sea válido y que haya conexión a internet.";
+            fileDialogBody.replaceChildren(message);
+            throw error;
+          }
+          return;
+        }
+
+        const editableExtensions = new Set(["txt", "md", "json", "html", "htm", "css", "js", "ts", "xml", "yaml", "yml", "log", "sql"]);
+        if (editableExtensions.has(extension) || (file.type || "").startsWith("text/")) {
+          const editor = document.createElement("textarea");
+          editor.className = "file-editor";
+          editor.setAttribute("aria-label", `Contenido de ${file.name}`);
+          editor.value = await file.blob.text();
+          editor.readOnly = !isAdmin();
+          if (isAdmin()) {
+            editor.addEventListener("input", () => {
+              editorHasChanges = true;
+              saveFileEditButton.hidden = false;
+              cancelFileEditButton.hidden = false;
+            });
+          }
+          fileDialogBody.append(editor);
+          fileDialog.showModal();
+          return;
+        }
+
+        const message = document.createElement("div");
+        message.className = "file-preview-message";
+        if (file.type === "application/pdf" || extension === "pdf") {
+          activePreviewUrl = URL.createObjectURL(file.blob);
+          const frame = document.createElement("iframe");
+          frame.className = "file-preview-frame";
+          frame.title = `Vista previa de ${file.name}`;
+          frame.src = activePreviewUrl;
+          fileDialogBody.append(frame);
+        } else if ((file.type || "").startsWith("image/") || ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg"].includes(extension)) {
+          activePreviewUrl = URL.createObjectURL(file.blob);
+          const image = document.createElement("img");
+          image.className = "file-preview-image";
+          image.alt = `Vista previa de ${file.name}`;
+          image.src = activePreviewUrl;
+          fileDialogBody.append(image);
+        } else {
+          message.innerHTML = "<strong>Este formato no se puede previsualizar aquí.</strong>Puedes cerrar esta ventana y descargar el archivo para abrirlo con una aplicación compatible.";
+          fileDialogBody.append(message);
+        }
+        fileDialog.showModal();
+      }
+
+      function renderFiles() {
+        const query = searchInput.value.trim().toLocaleLowerCase("es");
+        const category = categoryFilter.value;
+        const visibleFiles = allFiles
+          .filter((file) => category === "all" || file.category === category)
+          .filter((file) => `${file.name} ${file.category} ${file.notes || ""}`.toLocaleLowerCase("es").includes(query))
+          .sort((first, second) => second.uploadedAt - first.uploadedAt);
+
+        fileCount.textContent = `${allFiles.length} ${allFiles.length === 1 ? "archivo" : "archivos"}`;
+        fileList.innerHTML = visibleFiles.map((file) => `
+          <tr>
+            <td>
+              <div class="file-name">
+                <span class="file-icon" aria-hidden="true">${escapeHtml(fileType(file.name))}</span>
+                <div>
+                  <div class="file-title">${escapeHtml(file.name)}</div>
+                  ${file.notes ? `<div class="file-subtitle">${escapeHtml(file.notes)}</div>` : ""}
+                </div>
+              </div>
+            </td>
+            <td><span class="category-tag">${escapeHtml(file.category)}</span></td>
+            <td class="file-date">${escapeHtml(formatDate(file.uploadedAt))}</td>
+            <td class="file-size">${escapeHtml(formatSize(file.size))}</td>
+            <td>
+              <div class="row-actions">
+                <button class="icon-button" type="button" data-action="open" data-id="${escapeHtml(file.id)}" aria-label="Abrir ${escapeHtml(file.name)}" title="Abrir y editar si tienes perfil de administrador">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M14 3h7v7m-1-6-9 9"/><path d="M19 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6"/></svg>
+                </button>
+                <button class="icon-button download" type="button" data-action="download" data-id="${escapeHtml(file.id)}" aria-label="Descargar ${escapeHtml(file.name)}" title="Descargar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 16v4h14v-4"/></svg>
+                </button>
+                ${isAdmin() ? `<button class="icon-button remove" type="button" data-action="delete" data-id="${escapeHtml(file.id)}" aria-label="Eliminar ${escapeHtml(file.name)}" title="Eliminar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16m-10 4v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+                </button>` : ""}
+              </div>
+            </td>
+          </tr>`).join("");
+
+        emptyState.hidden = visibleFiles.length > 0;
+        emptyState.innerHTML = allFiles.length === 0
+          ? "<strong>Aún no hay archivos</strong>Sube el primer documento para empezar tu biblioteca."
+          : "<strong>No encontramos archivos</strong>Prueba con otra búsqueda o categoría.";
+      }
+
+      async function refreshFiles() {
+        try {
+          allFiles = await getAllFiles(await openDatabase());
+          renderFiles();
+        } catch (error) {
+          statusMessage.textContent = "No se pudo abrir el almacenamiento del navegador. Prueba con una versión reciente de Chrome o Edge.";
+          console.error(error);
+        }
+      }
+
+      function renderLinks() {
+        platformList.innerHTML = allLinks
+          .sort((first, second) => second.addedAt - first.addedAt)
+          .map((link) => `
+            <article class="platform-card">
+              <div class="platform-title">${escapeHtml(link.title)}</div>
+              <span class="platform-url" title="${escapeHtml(link.url)}">${escapeHtml(link.url)}</span>
+              <div class="platform-actions">
+                <a class="quiet-button" href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">Abrir plataforma</a>
+                ${isAdmin() ? `<button class="icon-button remove" type="button" data-action="delete-link" data-id="${escapeHtml(link.id)}" aria-label="Eliminar enlace ${escapeHtml(link.title)}" title="Eliminar enlace">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16m-10 4v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+                </button>` : ""}
+              </div>
+            </article>`).join("");
+        platformEmpty.hidden = allLinks.length > 0;
+      }
+
+      async function refreshLinks() {
+        try {
+          allLinks = await getAllLinks(await openDatabase());
+          renderLinks();
+        } catch (error) {
+          statusMessage.textContent = "No se pudieron cargar los enlaces guardados.";
+          console.error(error);
+        }
+      }
+
+      function prepareUpload(files) {
+        if (!isAdmin()) {
+          statusMessage.textContent = "Solo el perfil de administrador puede subir archivos.";
+          return;
+        }
+        pendingFiles = Array.from(files).filter((file) => file.size > 0);
+        if (pendingFiles.length === 0) return;
+        pendingList.innerHTML = pendingFiles.map((file) => `<li>${escapeHtml(file.name)} <span class="file-subtitle">${escapeHtml(formatSize(file.size))}</span></li>`).join("");
+        dialog.showModal();
+      }
+
+      document.querySelector("#upload-button").addEventListener("click", () => fileInput.click());
+      document.querySelector("#browse-button").addEventListener("click", () => fileInput.click());
+      fileInput.addEventListener("change", () => {
+        prepareUpload(fileInput.files);
+        fileInput.value = "";
+      });
+      document.querySelector("#cancel-upload").addEventListener("click", () => dialog.close());
+      dialog.addEventListener("close", () => { pendingFiles = []; pendingList.innerHTML = ""; });
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!isAdmin()) {
+          statusMessage.textContent = "Solo el perfil de administrador puede guardar archivos.";
+          dialog.close();
+          return;
+        }
+        if (pendingFiles.length === 0) return;
+        const submitButton = form.querySelector("[type=submit]");
+        submitButton.disabled = true;
+        const uploadedAt = Date.now();
+        const records = pendingFiles.map((file) => ({
+          id: `${uploadedAt}-${Math.random().toString(36).slice(2)}`,
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          category: document.querySelector("#upload-category").value,
+          notes: document.querySelector("#upload-notes").value.trim(),
+          uploadedAt,
+          blob: file
+        }));
+        try {
+          await saveFiles(await openDatabase(), records);
+          document.querySelector("#upload-notes").value = "";
+          dialog.close();
+          statusMessage.textContent = `${records.length} ${records.length === 1 ? "archivo agregado" : "archivos agregados"}.`;
+          await refreshFiles();
+        } catch (error) {
+          statusMessage.textContent = "No se pudieron guardar los archivos. Puede que el navegador se haya quedado sin espacio.";
+          console.error(error);
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+
+      ["dragenter", "dragover"].forEach((eventName) => dropZone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        dropZone.classList.add("is-over");
+      }));
+      ["dragleave", "drop"].forEach((eventName) => dropZone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        dropZone.classList.remove("is-over");
+      }));
+      dropZone.addEventListener("drop", (event) => prepareUpload(event.dataTransfer.files));
+
+      adminLoginButton.addEventListener("click", showAdminAuth);
+      const switchToAgent = async () => {
+        if (editorHasChanges && !window.confirm("Hay cambios sin guardar. ¿Descartarlos y cambiar al perfil de agente?")) return;
+        if (excelWorkspaceMode && activeWorkbook && activeWorkbook.kind === "exceljs") {
+          try {
+            const ExcelJS = await loadExcelLibrary();
+            const workbook = new ExcelJS.Workbook();
+            await workbook.xlsx.load(activeWorkbook.originalBytes.slice(0));
+            activeWorkbook.workbook = workbook;
+            activeWorkbook.formulaState = await initializeFormulaEngine(workbook);
+            editorHasChanges = false;
+          } catch (error) {
+            statusMessage.textContent = "No se pudieron descartar los cambios antes de cambiar de perfil.";
+            console.error(error);
+            return;
+          }
+        }
+        if (fileDialog.open && !excelWorkspaceMode) fileDialog.close();
+        if (dialog.open) dialog.close();
+        if (linkDialog.open) linkDialog.close();
+        profile = "agent";
+        try {
+          sessionStorage.removeItem("nesting-admin-session");
+        } catch (error) {
+          console.error(error);
+        }
+        updateProfileUI();
+        statusMessage.textContent = "Perfil de agente activado. Puedes consultar, abrir y descargar archivos.";
+      };
+      agentModeButton.addEventListener("click", switchToAgent);
+      excelAgentModeButton.addEventListener("click", switchToAgent);
+
+      document.querySelector("#cancel-auth").addEventListener("click", () => authDialog.close());
+      excelAdminLoginButton.addEventListener("click", showAdminAuth);
+      authDialog.addEventListener("close", resetPasswordVisibility);
+      document.querySelectorAll("[data-password-toggle]").forEach((button) => {
+        button.addEventListener("click", () => togglePasswordVisibility(button));
+      });
+      themeToggle.addEventListener("click", () => {
+        applyTheme(themeToggle.getAttribute("aria-pressed") === "true" ? "light" : "dark", true);
+      });
+      authForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        authStatus.textContent = "";
+        const password = adminPassword.value;
+        const submitButton = authForm.querySelector("[type=submit]");
+        submitButton.disabled = true;
+        try {
+          if (authMode === "setup") {
+            if (password.length < 10) {
+              authStatus.textContent = "La contraseña debe tener al menos 10 caracteres.";
+              return;
+            }
+            if (password !== adminPasswordConfirm.value) {
+              authStatus.textContent = "Las contraseñas no coinciden.";
+              return;
+            }
+            const salt = window.crypto.getRandomValues(new Uint8Array(16));
+            const hash = await derivePasswordHash(password, salt);
+            adminCredential = { salt: bytesToHex(salt), hash: bytesToHex(hash) };
+            await saveSetting(await openDatabase(), "adminCredential", adminCredential);
+            profile = "admin";
+            try {
+              sessionStorage.setItem("nesting-admin-session", "active");
+            } catch (error) {
+              console.error(error);
+            }
+            authDialog.close();
+            updateProfileUI();
+            statusMessage.textContent = "Administrador configurado. Esta contraseña protege solo este navegador.";
+            return;
+          }
+
+          const salt = hexToBytes(adminCredential.salt);
+          const expectedHash = hexToBytes(adminCredential.hash);
+          const actualHash = await derivePasswordHash(password, salt);
+          const matches = actualHash.length === expectedHash.length &&
+            actualHash.reduce((difference, byte, index) => difference | (byte ^ expectedHash[index]), 0) === 0;
+          if (!matches) {
+            authStatus.textContent = "La contraseña no es correcta.";
+            return;
+          }
+          profile = "admin";
+          try {
+            sessionStorage.setItem("nesting-admin-session", "active");
+          } catch (error) {
+            console.error(error);
+          }
+          authDialog.close();
+          updateProfileUI();
+          statusMessage.textContent = "Perfil de administrador activado.";
+        } catch (error) {
+          authStatus.textContent = "No se pudo configurar o verificar la contraseña. Usa un navegador actualizado.";
+          console.error(error);
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+
+      document.querySelector("#add-link-button").addEventListener("click", () => {
+        if (!isAdmin()) return;
+        linkStatus.textContent = "";
+        linkDialog.showModal();
+      });
+      document.querySelector("#cancel-link").addEventListener("click", () => linkDialog.close());
+      linkForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!isAdmin()) {
+          linkStatus.textContent = "Solo el perfil de administrador puede agregar enlaces.";
+          return;
+        }
+        const title = document.querySelector("#link-title").value.trim();
+        const rawUrl = document.querySelector("#link-url").value.trim();
+        if (!title) {
+          linkStatus.textContent = "Escribe un nombre para la plataforma.";
+          return;
+        }
+        let url;
+        try {
+          url = new URL(rawUrl);
+        } catch {
+          linkStatus.textContent = "Escribe una dirección web válida.";
+          return;
+        }
+        if (!["http:", "https:"].includes(url.protocol) || url.username || url.password) {
+          linkStatus.textContent = "Usa una dirección HTTP o HTTPS sin usuario ni contraseña.";
+          return;
+        }
+        const submitButton = linkForm.querySelector("[type=submit]");
+        submitButton.disabled = true;
+        try {
+          await saveLink(await openDatabase(), {
+            id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+            title,
+            url: url.href,
+            addedAt: Date.now()
+          });
+          linkForm.reset();
+          linkDialog.close();
+          statusMessage.textContent = "Enlace agregado.";
+          await refreshLinks();
+        } catch (error) {
+          linkStatus.textContent = "No se pudo guardar el enlace.";
+          console.error(error);
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+
+      searchInput.addEventListener("input", renderFiles);
+      categoryFilter.addEventListener("change", renderFiles);
+      fileList.addEventListener("click", async (event) => {
+        const button = event.target.closest("button[data-action]");
+        if (!button) return;
+        const file = allFiles.find((item) => item.id === button.dataset.id);
+        if (!file) return;
+
+        if (button.dataset.action === "open") {
+          if (fileExtension(file.name) === "xlsx") {
+            if (!openWorkbookInNewTab(file)) {
+              statusMessage.textContent = "El navegador bloqueó la pestaña nueva. Permite las ventanas emergentes para abrir Excel.";
+            }
+            return;
+          }
+          try {
+            await openFile(file);
+          } catch (error) {
+            statusMessage.textContent = "No se pudo abrir el archivo.";
+            console.error(error);
+          }
+          return;
+        }
+
+        if (button.dataset.action === "download") {
+          const url = URL.createObjectURL(file.blob);
+          const anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = file.name;
+          anchor.click();
+          URL.revokeObjectURL(url);
+          return;
+        }
+
+        if (button.dataset.action === "delete" && isAdmin() && window.confirm(`¿Eliminar "${file.name}" de esta biblioteca?`)) {
+          try {
+            await removeFile(await openDatabase(), file.id);
+            statusMessage.textContent = "Archivo eliminado.";
+            await refreshFiles();
+          } catch (error) {
+            statusMessage.textContent = "No se pudo eliminar el archivo.";
+            console.error(error);
+          }
+        }
+      });
+
+      platformList.addEventListener("click", async (event) => {
+        const button = event.target.closest('button[data-action="delete-link"]');
+        if (!button || !isAdmin()) return;
+        const link = allLinks.find((item) => item.id === button.dataset.id);
+        if (!link || !window.confirm(`¿Eliminar el enlace "${link.title}"?`)) return;
+        try {
+          await removeLink(await openDatabase(), link.id);
+          statusMessage.textContent = "Enlace eliminado.";
+          await refreshLinks();
+        } catch (error) {
+          statusMessage.textContent = "No se pudo eliminar el enlace.";
+          console.error(error);
+        }
+      });
+
+      document.querySelector("#close-file-dialog").addEventListener("click", () => {
+        if (editorHasChanges && !window.confirm("Hay cambios sin guardar. ¿Cerrar sin guardar?")) return;
+        if (excelWorkspaceMode) {
+          window.close();
+          if (!window.closed) {
+            const libraryUrl = new URL(window.location.href);
+            libraryUrl.searchParams.delete("workbook");
+            window.location.replace(libraryUrl.href);
+          }
+          return;
+        }
+        fileDialog.close();
+      });
+      fileDialog.addEventListener("cancel", (event) => {
+        if (editorHasChanges && !window.confirm("Hay cambios sin guardar. ¿Cerrar sin guardar?")) {
+          event.preventDefault();
+        }
+      });
+      fileDialog.addEventListener("close", () => {
+        activeFile = null;
+        activeCsv = null;
+        activeWorkbook = null;
+        editorHasChanges = false;
+        releasePreviewUrl();
+      });
+      cancelFileEditButton.addEventListener("click", async () => {
+        if (!activeFile) return;
+        if (activeCsv) {
+          activeCsv.rows = activeCsv.originalRows.map((row) => row.slice());
+          renderActiveCsv();
+          editorHasChanges = false;
+          saveFileEditButton.hidden = true;
+          cancelFileEditButton.hidden = true;
+          return;
+        }
+        if (activeWorkbook && activeWorkbook.kind === "exceljs") {
+          try {
+            const ExcelJS = await loadExcelLibrary();
+            const workbook = new ExcelJS.Workbook();
+            await workbook.xlsx.load(activeWorkbook.originalBytes.slice(0));
+            activeWorkbook.workbook = workbook;
+            activeWorkbook.formulaState = await initializeFormulaEngine(workbook);
+            renderWorkbookSheet();
+            editorHasChanges = false;
+            saveFileEditButton.hidden = true;
+            cancelFileEditButton.hidden = true;
+          } catch (error) {
+            statusMessage.textContent = "No se pudieron descartar los cambios de Excel.";
+            console.error(error);
+          }
+          return;
+        }
+        const editor = fileDialogBody.querySelector(".file-editor");
+        if (!editor) return;
+        try {
+          editor.value = await activeFile.blob.text();
+          editorHasChanges = false;
+          saveFileEditButton.hidden = true;
+          cancelFileEditButton.hidden = true;
+        } catch (error) {
+          statusMessage.textContent = "No se pudieron descartar los cambios.";
+          console.error(error);
+        }
+      });
+      saveFileEditButton.addEventListener("click", async () => {
+        if (!isAdmin() || !activeFile) return;
+        if (activeCsv) {
+          saveFileEditButton.disabled = true;
+          try {
+            const updatedBlob = new Blob([encodeCsv(activeCsv.rows, activeCsv.delimiter)], {
+              type: activeFile.type || "text/csv;charset=utf-8"
+            });
+            const updatedFile = { ...activeFile, blob: updatedBlob, size: updatedBlob.size };
+            await updateFile(await openDatabase(), updatedFile);
+            activeFile = updatedFile;
+            activeCsv.originalRows = activeCsv.rows.map((row) => row.slice());
+            editorHasChanges = false;
+            saveFileEditButton.hidden = true;
+            cancelFileEditButton.hidden = true;
+            fileDialogDescription.textContent = `${activeFile.category} · ${formatSize(activeFile.size)} · CSV`;
+            statusMessage.textContent = "Cambios guardados.";
+            await refreshFiles();
+          } catch (error) {
+            statusMessage.textContent = "No se pudieron guardar los cambios de la hoja CSV.";
+            console.error(error);
+          } finally {
+            saveFileEditButton.disabled = false;
+          }
+          return;
+        }
+        if (activeWorkbook && activeWorkbook.kind === "exceljs") {
+          saveFileEditButton.disabled = true;
+          try {
+            storeFormulaResults(activeWorkbook.formulaState, activeWorkbook.workbook);
+            activeWorkbook.workbook.calcProperties.fullCalcOnLoad = true;
+            activeWorkbook.workbook.calcProperties.forceFullCalc = true;
+            const output = await activeWorkbook.workbook.xlsx.writeBuffer();
+            const updatedBlob = new Blob([output], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            });
+            const updatedFile = { ...activeFile, blob: updatedBlob, size: updatedBlob.size };
+            await updateFile(await openDatabase(), updatedFile);
+            activeFile = updatedFile;
+            activeWorkbook.file = updatedFile;
+            activeWorkbook.originalBytes = await updatedBlob.arrayBuffer();
+            editorHasChanges = false;
+            saveFileEditButton.hidden = true;
+            cancelFileEditButton.hidden = true;
+            fileDialogDescription.textContent = `${activeFile.category} · ${formatSize(activeFile.size)} · Libro Excel`;
+            statusMessage.textContent = "Cambios de Excel guardados con sus estilos y hojas.";
+            await refreshFiles();
+          } catch (error) {
+            statusMessage.textContent = "No se pudieron guardar los cambios de Excel.";
+            console.error(error);
+          } finally {
+            saveFileEditButton.disabled = false;
+          }
+          return;
+        }
+        const editor = fileDialogBody.querySelector(".file-editor");
+        if (!editor) return;
+        saveFileEditButton.disabled = true;
+        try {
+          const updatedBlob = new Blob([editor.value], { type: activeFile.type || "text/plain" });
+          const updatedFile = { ...activeFile, blob: updatedBlob, size: updatedBlob.size };
+          await updateFile(await openDatabase(), updatedFile);
+          activeFile = updatedFile;
+          editorHasChanges = false;
+          saveFileEditButton.hidden = true;
+          cancelFileEditButton.hidden = true;
+          fileDialogDescription.textContent = `${activeFile.category} · ${formatSize(activeFile.size)}`;
+          statusMessage.textContent = "Cambios guardados.";
+          await refreshFiles();
+        } catch (error) {
+          statusMessage.textContent = "No se pudieron guardar los cambios del archivo.";
+          console.error(error);
+        } finally {
+          saveFileEditButton.disabled = false;
+        }
+      });
+
+      excelFormulaInput.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" || !isAdmin() || !activeWorkbook || !activeWorkbook.selectedCell) return;
+        event.preventDefault();
+        const { row, column } = activeWorkbook.selectedCell;
+        commitExcelCell(row, column, excelFormulaInput.value);
+        renderWorkbookSheet();
+      });
+      initializeTheme();
+      updateProfileUI();
+      startWorkbookTab().catch((error) => {
+        statusMessage.textContent = "No se pudo abrir el libro en la pestaña de Excel.";
+        console.error(error);
+      });
+      if (!new URLSearchParams(window.location.search).has("workbook")) {
+        Promise.all([loadAdminCredential(), refreshFiles(), refreshLinks()]).catch((error) => {
+          statusMessage.textContent = "No se pudo inicializar la biblioteca.";
+          console.error(error);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
